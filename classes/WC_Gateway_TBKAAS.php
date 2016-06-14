@@ -36,69 +36,26 @@ use WC_Order;
  */
 class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
-//    var $codigo_comercio;
-//    var $token_servicio;
-//
-//    public function __construct() {
-//
-//        Logger::log_me_wp("ENTANDO AL CONSTRUCTOR");
-//
-//        $this->id = 'tbkaas';
-//        $this->icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(__FILE__)) . '/assets/images/logo.png';
-//        
-//        Logger::log_me_wp($this->icon);
-//        
-//        $this->has_fields = false;
-//        $this->method_title = 'TBKAAS WS';
-//
-//        $this->method_description = __('Permite pagos con tarjeta de crédito y debido chilenas usando WebServices a través de TBKAAS ');
-//
-//
-//
-//        // Load the settings.
-//        $this->init_form_fields();
-//        $this->init_settings();
-//
-//        // Define user set variables
-//        $this->title = $this->get_option('title');
-//        $this->description = $this->get_option('description');
-//
-//        $this->codigo_comercio = $this->get_option("codigo_comercio");
-//        $this->token_servicio = $this->get_option("token_servicio");
-//
-//
-//        /*
-//         * Actions
-//         * woocommerce_receipt_tbkaas se ejecuta luego del checkout.
-//         * woocommerce_thankyou_tbkaas se ejecuta al terminar la transacción.
-//         * woocommerce_update_options_payment_gateways_tbkaas  guarda la configuración de la pasarela de pago.
-//         */
-//
-//        add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
-//        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-//
-//        // Payment listener/API hook
-//        add_action('woocommerce_api_wc_gateway_' . $this->id, array($this, 'tbkaas_api_handler'));
-//
-//        Logger::log_me_wp("Saliendo AL CONSTRUCTOR");
-//    }
-
+    var $notify_url;
+    
     function __construct() {
         $this->id = 'tbkaas';
         $this->icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(__FILE__)) . '/assets/images/logo.png';
         $this->has_fields = false;
         $this->method_title = 'Transbank As A Service';
+        $this->notify_url = WC()->api_request_url('WC_Gateway_TBKAAS');
         // Load the settings.
         $this->init_form_fields();
         $this->init_settings();
         // Define user set variables
         $this->title = $this->get_option('title');
-        $this->description = $this->get_option('description');
+        $this->description = $this->get_option('description').""
+                . "<br> NOTIFICATION URL : <b>$this->notify_url</b>";
 
 
         add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-         
+
         //Payment listener/API hook
         add_action('woocommerce_api_wc_gateway_' . $this->id, array($this, 'tbkaas_api_handler'));
     }
@@ -211,10 +168,9 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         /*
          * Agregamos el id de sesion la OC.
          * Esto permitira que validemos el pago mas tarde
+         * Este valor no cambiara para la OC
          */
-        if (!add_post_meta($this->order_id, '_id_session', $id_session, true)) {
-            update_post_meta($this->order_id, '_id_session', $id_session);
-        }
+        add_post_meta($this->order_id, '_id_session', $id_session, true);
 
         $pago_args = array(
             'monto' => round($order->order_total),
@@ -289,6 +245,61 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
 
         return $resultado;
+    }
+
+    /*
+     * Proceso el post desde TBKAAS
+     * Obtenemos order_id
+     * Obtenemos el session_id
+     */
+
+    function tbkaas_api_handler() {
+
+        $order_id = filter_input(INPUT_POST, "order_id");
+        $id_session = filter_input(INPUT_POST, "id_session");
+
+        //Verificamos que la orden exista 
+        $order = new WC_Order($order_id);
+        if (is_null($order))
+            return;
+
+        $id_session_db = get_post_meta($order_id, "_id_session", true);
+
+        if ($id_session_db == $id_session) {
+            Logger::log_me_wp("$id_session == $id_session_db");
+        } else {
+            return;
+        }
+
+        //Si existe le preguntamos al servidor su estado
+        $fields = array(
+            'codigo_comercio' => $this->get_option("codigo_comercio"),
+            'token_service' => $this->get_option("codigo_comercio"),
+            'order_id' => $order_id,
+            'monto' => round($order->order_total),
+            'id_session' => $id_session
+        );
+
+        foreach ($fields as $key => $value) {
+            $fields_string .= $key . '=' . $value . '&';
+        }
+        rtrim($fields_string, '&');
+        //open connection
+        $ch = curl_init();
+
+        //set the url, number of POST vars, POST data
+        curl_setopt($ch, CURLOPT_URL, SERVER_TBKAAS_VERIFICAR);
+        curl_setopt($ch, CURLOPT_POST, count($fields));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+
+        //execute post
+        $result = curl_exec($ch);
+
+        Logger::log_me_wp("Resultado Verificacion : " . $result);
+
+        //close connection
+        curl_close($ch);
+        return;
     }
 
 }
