@@ -36,49 +36,97 @@ use WC_Order;
  */
 class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
-    var $codigo_comercio;
-    var $token_servicio;
+//    var $codigo_comercio;
+//    var $token_servicio;
+//
+//    public function __construct() {
+//
+//        Logger::log_me_wp("ENTANDO AL CONSTRUCTOR");
+//
+//        $this->id = 'tbkaas';
+//        $this->icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(__FILE__)) . '/assets/images/logo.png';
+//        
+//        Logger::log_me_wp($this->icon);
+//        
+//        $this->has_fields = false;
+//        $this->method_title = 'TBKAAS WS';
+//
+//        $this->method_description = __('Permite pagos con tarjeta de crédito y debido chilenas usando WebServices a través de TBKAAS ');
+//
+//
+//
+//        // Load the settings.
+//        $this->init_form_fields();
+//        $this->init_settings();
+//
+//        // Define user set variables
+//        $this->title = $this->get_option('title');
+//        $this->description = $this->get_option('description');
+//
+//        $this->codigo_comercio = $this->get_option("codigo_comercio");
+//        $this->token_servicio = $this->get_option("token_servicio");
+//
+//
+//        /*
+//         * Actions
+//         * woocommerce_receipt_tbkaas se ejecuta luego del checkout.
+//         * woocommerce_thankyou_tbkaas se ejecuta al terminar la transacción.
+//         * woocommerce_update_options_payment_gateways_tbkaas  guarda la configuración de la pasarela de pago.
+//         */
+//
+//        add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
+//        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+//
+//        // Payment listener/API hook
+//        add_action('woocommerce_api_wc_gateway_' . $this->id, array($this, 'tbkaas_api_handler'));
+//
+//        Logger::log_me_wp("Saliendo AL CONSTRUCTOR");
+//    }
+     var $notify_url;
+    var $order_received_url;
+    var $politicas_devoluccion;
+    var $tiempos_envio;
+    var $codigocomercio;
+    var $privatekey;
+    var $certfile;
 
     public function __construct() {
-
-        Logger::log_me_wp("ENTANDO AL CONSTRUCTOR");
-
-        $this->id = 'tbkaas';
+        $this->id = 'webpayplusws';
         $this->icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(__FILE__)) . '/assets/images/logo.png';
         $this->has_fields = false;
-        $this->method_title = 'TBKAAS WS';
+        $this->method_title = 'WebPayPlus WS';
+        $this->notify_url = WC()->api_request_url('WC_Gateway_WebpayplusWS');
+        $this->method_description = __('Permite pagos con tarjeta de crédito y debido chilenas usando WebServices ');
 
-        $this->method_description = __('Permite pagos con tarjeta de crédito y debido chilenas usando WebServices a través de TBKAAS ');
 
 
-
-        // Load the settings.
+// Load the settings.
         $this->init_form_fields();
         $this->init_settings();
 
-        // Define user set variables
+// Define user set variables
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
+        $this->politicas_devoluccion = $this->settings['politicas-devoluciones'];
+        $this->codigocomercio = $this->get_option("codigocomercio");
 
-        $this->codigo_comercio = $this->get_option("codigo_comercio");
-        $this->token_servicio = $this->get_option("token_servicio");
-
+        $this->privatekey = plugin_dir_path(__FILE__) . "llaves" . DIRECTORY_SEPARATOR . $this->codigocomercio . ".key";
+        $this->certfile = plugin_dir_path(__FILE__) . "llaves" . DIRECTORY_SEPARATOR . $this->codigocomercio . ".crt";
 
         /*
          * Actions
-         * woocommerce_receipt_tbkaas se ejecuta luego del checkout.
-         * woocommerce_thankyou_tbkaas se ejecuta al terminar la transacción.
-         * woocommerce_update_options_payment_gateways_tbkaas  guarda la configuración de la pasarela de pago.
+         * woocommerce_receipt_webpayplus se ejecuta luego del checkout.
+         * woocommerce_thankyou_webpayplus se ejecuta al terminar la transacción.
+         * woocommerce_update_options_payment_gateways_webpayplus  guarda la configuración de la pasarela de pago.
          */
 
-        add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
+        add_action('woocommerce_receipt_webpayplusws', array($this, 'receipt_page'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 
-        // Payment listener/API hook
-        add_action('woocommerce_api_wc_gateway_' . $this->id, array($this, 'tbkaas_api_handler'));
-
-        Logger::log_me_wp("Saliendo AL CONSTRUCTOR");
+// Payment listener/API hook
+        add_action('woocommerce_api_wc_gateway_webpayplusws', array($this, 'webpayplus_api_handler'));
     }
+
 
     function init_form_fields() {
 
