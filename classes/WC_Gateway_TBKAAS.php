@@ -289,7 +289,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                 'monto' => round($order->order_total),
                 'id_session' => $id_session
             );
-
+            $fields_string = "";
             foreach ($fields as $key => $value) {
                 $fields_string .= $key . '=' . $value . '&';
             }
@@ -310,9 +310,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             //close connection
             curl_close($ch);
             return;
-        }
-        else
-        {
+        } else {
             Logger::log_me_wp("ENTRANDO AL API SIN POST");
         }
     }
