@@ -82,23 +82,24 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 //
 //        Logger::log_me_wp("Saliendo AL CONSTRUCTOR");
 //    }
-    
+
     function __construct() {
-        $this->id = 'WooPagosMP';
+        $this->id = 'tbkaas';
+        $this->icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(__FILE__)) . '/assets/images/logo.png';
         $this->has_fields = false;
-        $this->method_title = 'Mercado Pago Chile';
+        $this->method_title = 'Transbank As A Service';
         // Load the settings.
         $this->init_form_fields();
         $this->init_settings();
         // Define user set variables
         $this->title = $this->get_option('title');
 //        $this->description = $this->getDescription();
-        $this->notification_url = str_replace('https:', 'http:', add_query_arg('wc-api', 'WooPagosMP', home_url('/')));
+//        $this->notification_url = str_replace('https:', 'http:', add_query_arg('wc-api', 'WooPagosMP', home_url('/')));
         add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('woocommerce_api_wc_gateway_paypal', array($this, 'check_ipn_response'));
     }
-    
+
     function init_form_fields() {
 
         $this->form_fields = array(
