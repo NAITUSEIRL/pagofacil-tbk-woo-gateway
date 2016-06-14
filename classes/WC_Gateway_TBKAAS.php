@@ -146,8 +146,9 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
     function receipt_page($order_id) {
         $sufijo = "[RECEIPT]";
         $DOBLEVALIDACION = $this->get_option('doblevalidacion');
+        $order = new WC_Order($order_id);
         if ($DOBLEVALIDACION === "yes") {
-            $order = new WC_Order($order_id);
+            
             log_me("Doble Validación Activada / " . $order->status, $sufijo);
             if ($order->status === 'processing' || $order->status === 'completed') {
                 Logger::log_me_wp("ORDEN YA PAGADA (" . $order->status . ") EXISTENTE " . $order_id, "\t" . $sufijo);
@@ -178,7 +179,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
          * Esto permitira que validemos el pago mas tarde
          * Este valor no cambiara para la OC
          */
-        add_post_meta($this->order_id, '_id_session', $id_session, true);
+        add_post_meta($order_id, '_id_session', $id_session, true);
 
         $pago_args = array(
             'monto' => round($order->order_total),
