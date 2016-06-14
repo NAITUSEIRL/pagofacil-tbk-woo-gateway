@@ -295,12 +295,12 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             }
             rtrim($fields_string, '&');
             //open connection
-            $ch = curl_init();
+            $ch = \curl_init();
 
             //set the url, number of POST vars, POST data
-            curl_setopt($ch, CURLOPT_URL, SERVER_TBKAAS_VERIFICAR);
-            curl_setopt($ch, CURLOPT_POST, count($fields));
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+            \curl_setopt($ch, CURLOPT_URL, SERVER_TBKAAS_VERIFICAR);
+            \curl_setopt($ch, CURLOPT_POST, count($fields));
+            \curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
 
             //execute post
             $result = curl_exec($ch);
