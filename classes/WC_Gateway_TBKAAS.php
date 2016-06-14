@@ -267,6 +267,9 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             Logger::log_me_wp("ENTRANDO AL API POR POST");
             $order_id = filter_input(INPUT_POST, "order_id");
             $id_session = filter_input(INPUT_POST, "id_session");
+            
+            Logger::log_me_wp("Order ID : $order_id");
+            Logger::log_me_wp("Id Session : $id_session");
 
             //Verificamos que la orden exista 
             $order = new WC_Order($order_id);
