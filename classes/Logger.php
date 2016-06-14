@@ -6,7 +6,7 @@
  * @author ctala
  */
 
-namespace tbkaas-woo-gateway\classes;
+namespace tbkaaswoogateway\classes;
 
 class Logger {
     

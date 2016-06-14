@@ -13,8 +13,9 @@
     },
     "autoload": {
         "psr-4": {
-            "tbkaas-woo-gateway\\classes\\": "classes/",
-            "tbkaas-woo-gateway\\helpers\\": "helpers/"
+            "tbkaaswoogateway\\classes\\": "classes/",
+            "tbkaaswoogateway\\helpers\\": "helpers/"
         }
 
+    }
 }
