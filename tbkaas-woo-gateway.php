@@ -1,6 +1,6 @@
 <?php
 
-namespace tbkaaswoogateway;
+
 
 /*
   Plugin Name: tbkaas-woo-gateway
@@ -17,7 +17,7 @@ namespace tbkaaswoogateway;
 
 include_once 'vendor/autoload.php';
 
-use tbkaaswoogateway\classes\Logger;
+//use tbkaaswoogateway\classes\Logger;
 use tbkaaswoogateway\classes\WC_Gateway_TBKAAS;
 
 //CONSTANTES
@@ -25,7 +25,7 @@ define("SERVER_TBKAAS", "http://dev-env.sv1.tbk.cristiantala.cl/tbk/v1/initTrans
 
 //VARIABLES
 //Funciones
-add_action('plugins_loaded', 'tbkaaswoogateway\init_TBKAAS');
+add_action('plugins_loaded', 'init_TBKAAS');
 function init_TBKAAS() {
     if (!class_exists('WC_Payment_Gateway'))
         return;
@@ -34,8 +34,8 @@ function init_TBKAAS() {
     }
 }
 function add_your_gateway_class($methods) {
-    $methods[] = 'tbkaaswoogateway\WC_Gateway_TBKAAS_Chile';
+    $methods[] = 'WC_Gateway_TBKAAS_Chile';
     return $methods;
 }
-add_filter('woocommerce_payment_gateways', 'tbkaaswoogateway\add_your_gateway_class');
+add_filter('woocommerce_payment_gateways', 'add_your_gateway_class');
 ?>

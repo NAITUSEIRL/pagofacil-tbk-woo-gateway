@@ -82,52 +82,23 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 //
 //        Logger::log_me_wp("Saliendo AL CONSTRUCTOR");
 //    }
-     var $notify_url;
-    var $order_received_url;
-    var $politicas_devoluccion;
-    var $tiempos_envio;
-    var $codigocomercio;
-    var $privatekey;
-    var $certfile;
-
-    public function __construct() {
-        $this->id = 'webpayplusws';
-        $this->icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(__FILE__)) . '/assets/images/logo.png';
+    
+    function __construct() {
+        $this->id = 'WooPagosMP';
         $this->has_fields = false;
-        $this->method_title = 'WebPayPlus WS';
-        $this->notify_url = WC()->api_request_url('WC_Gateway_WebpayplusWS');
-        $this->method_description = __('Permite pagos con tarjeta de crédito y debido chilenas usando WebServices ');
-
-
-
-// Load the settings.
+        $this->method_title = 'Mercado Pago Chile';
+        // Load the settings.
         $this->init_form_fields();
         $this->init_settings();
-
-// Define user set variables
+        // Define user set variables
         $this->title = $this->get_option('title');
-        $this->description = $this->get_option('description');
-        $this->politicas_devoluccion = $this->settings['politicas-devoluciones'];
-        $this->codigocomercio = $this->get_option("codigocomercio");
-
-        $this->privatekey = plugin_dir_path(__FILE__) . "llaves" . DIRECTORY_SEPARATOR . $this->codigocomercio . ".key";
-        $this->certfile = plugin_dir_path(__FILE__) . "llaves" . DIRECTORY_SEPARATOR . $this->codigocomercio . ".crt";
-
-        /*
-         * Actions
-         * woocommerce_receipt_webpayplus se ejecuta luego del checkout.
-         * woocommerce_thankyou_webpayplus se ejecuta al terminar la transacción.
-         * woocommerce_update_options_payment_gateways_webpayplus  guarda la configuración de la pasarela de pago.
-         */
-
-        add_action('woocommerce_receipt_webpayplusws', array($this, 'receipt_page'));
+        $this->description = $this->getDescription();
+        $this->notification_url = str_replace('https:', 'http:', add_query_arg('wc-api', 'WooPagosMP', home_url('/')));
+        add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-
-// Payment listener/API hook
-        add_action('woocommerce_api_wc_gateway_webpayplusws', array($this, 'webpayplus_api_handler'));
+        add_action('woocommerce_api_wc_gateway_paypal', array($this, 'check_ipn_response'));
     }
-
-
+    
     function init_form_fields() {
 
         $this->form_fields = array(
