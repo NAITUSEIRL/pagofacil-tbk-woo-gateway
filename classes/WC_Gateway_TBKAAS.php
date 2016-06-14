@@ -51,13 +51,13 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
 
-        
 
-        $this->method_description =  '<ul>'
+
+        $this->method_description = '<ul>'
                 . '<li>URL CALLBACK : ' . $this->notify_url . '</b></i></li>'
                 . '<li>URL FINAL : ' . $this->notify_url . '</b></i></li>'
                 . '</ul>';
-                
+
 
 
 
@@ -263,51 +263,53 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
     function tbkaas_api_handler() {
 
-        $order_id = filter_input(INPUT_POST, "order_id");
-        $id_session = filter_input(INPUT_POST, "id_session");
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $order_id = filter_input(INPUT_POST, "order_id");
+            $id_session = filter_input(INPUT_POST, "id_session");
 
-        //Verificamos que la orden exista 
-        $order = new WC_Order($order_id);
-        if (is_null($order))
-            return;
+            //Verificamos que la orden exista 
+            $order = new WC_Order($order_id);
+            if (is_null($order))
+                return;
 
-        $id_session_db = get_post_meta($order_id, "_id_session", true);
+            $id_session_db = get_post_meta($order_id, "_id_session", true);
 
-        if ($id_session_db == $id_session) {
-            Logger::log_me_wp("$id_session == $id_session_db");
-        } else {
+            if ($id_session_db == $id_session) {
+                Logger::log_me_wp("$id_session == $id_session_db");
+            } else {
+                return;
+            }
+
+            //Si existe le preguntamos al servidor su estado
+            $fields = array(
+                'codigo_comercio' => $this->get_option("codigo_comercio"),
+                'token_service' => $this->get_option("codigo_comercio"),
+                'order_id' => $order_id,
+                'monto' => round($order->order_total),
+                'id_session' => $id_session
+            );
+
+            foreach ($fields as $key => $value) {
+                $fields_string .= $key . '=' . $value . '&';
+            }
+            rtrim($fields_string, '&');
+            //open connection
+            $ch = curl_init();
+
+            //set the url, number of POST vars, POST data
+            curl_setopt($ch, CURLOPT_URL, SERVER_TBKAAS_VERIFICAR);
+            curl_setopt($ch, CURLOPT_POST, count($fields));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+
+            //execute post
+            $result = curl_exec($ch);
+
+            Logger::log_me_wp("Resultado Verificacion : " . $result);
+
+            //close connection
+            curl_close($ch);
             return;
         }
-
-        //Si existe le preguntamos al servidor su estado
-        $fields = array(
-            'codigo_comercio' => $this->get_option("codigo_comercio"),
-            'token_service' => $this->get_option("codigo_comercio"),
-            'order_id' => $order_id,
-            'monto' => round($order->order_total),
-            'id_session' => $id_session
-        );
-
-        foreach ($fields as $key => $value) {
-            $fields_string .= $key . '=' . $value . '&';
-        }
-        rtrim($fields_string, '&');
-        //open connection
-        $ch = curl_init();
-
-        //set the url, number of POST vars, POST data
-        curl_setopt($ch, CURLOPT_URL, SERVER_TBKAAS_VERIFICAR);
-        curl_setopt($ch, CURLOPT_POST, count($fields));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
-
-        //execute post
-        $result = curl_exec($ch);
-
-        Logger::log_me_wp("Resultado Verificacion : " . $result);
-
-        //close connection
-        curl_close($ch);
-        return;
     }
 
 }
