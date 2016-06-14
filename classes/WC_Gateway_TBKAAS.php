@@ -271,7 +271,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             $order_id = filter_input(INPUT_POST, "order_id");
             //Verificamos que la orden exista 
             $order = new WC_Order($order_id);
-            if (is_null($order)) {
+            if (!($order)) {
                 return;
             }
             Logger::log_me_wp("Order $order_id existente, continuamos");
