@@ -25,8 +25,8 @@ define("SERVER_TBKAAS", "http://dev-env.sv1.tbk.cristiantala.cl/tbk/v1");
 
 //VARIABLES
 //Funciones
-add_action('plugins_loaded', 'tbkaaswoogateway\init_WCMPChile');
-function init_WCMPChile() {
+add_action('plugins_loaded', 'tbkaaswoogateway\init_TBKAAS');
+function init_TBKAAS() {
     if (!class_exists('WC_Payment_Gateway'))
         return;
     class WC_Gateway_TBKAAS_Chile extends WC_Gateway_TBKAAS {
