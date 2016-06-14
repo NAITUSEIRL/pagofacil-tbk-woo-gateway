@@ -33,7 +33,7 @@ use tbkaaswoogateway\classes\Logger;
  *
  * @author ctala
  */
-class WC_Gateway_TBKAAS {
+class WC_Gateway_TBKAAS extends WC_Payment_Gateway {
 
     var $codigo_comercio;
     var $token_servicio;
