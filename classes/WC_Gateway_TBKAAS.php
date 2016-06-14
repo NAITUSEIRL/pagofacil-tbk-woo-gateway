@@ -92,7 +92,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $this->init_settings();
         // Define user set variables
         $this->title = $this->get_option('title');
-        $this->description = $this->getDescription();
+//        $this->description = $this->getDescription();
         $this->notification_url = str_replace('https:', 'http:', add_query_arg('wc-api', 'WooPagosMP', home_url('/')));
         add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
