@@ -21,8 +21,8 @@ include_once 'vendor/autoload.php';
 use tbkaaswoogateway\classes\WC_Gateway_TBKAAS;
 
 //CONSTANTES
-define("SERVER_TBKAAS", "http://dev-env.sv1.tbk.cristiantala.cl/tbk/v1/initTransaction");
-define("SERVER_TBKAAS_VERIFICAR", "http://dev-env.sv1.tbk.cristiantala.cl/tbk/v1/estadoOrden");
+define("SERVER_TBKAAS", "https://dev-env.sv1.tbk.cristiantala.cl/tbk/v1/initTransaction");
+define("SERVER_TBKAAS_VERIFICAR", "https://dev-env.sv1.tbk.cristiantala.cl/tbk/v1/estadoOrden");
 
 //VARIABLES
 //Funciones
