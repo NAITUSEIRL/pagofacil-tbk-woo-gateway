@@ -27,13 +27,13 @@
 namespace tbkaaswoogateway\classes;
 
 use tbkaaswoogateway\classes\Logger;
-
+use WC_Order;
 /**
  * Description of WC_Gateway_TBKAAS
  *
  * @author ctala
  */
-class WC_Gateway_TBKAAS extends WC_Payment_Gateway {
+class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
     var $codigo_comercio;
     var $token_servicio;
