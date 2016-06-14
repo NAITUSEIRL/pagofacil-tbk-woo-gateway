@@ -28,6 +28,7 @@ namespace tbkaaswoogateway\classes;
 
 use tbkaaswoogateway\classes\Logger;
 use WC_Order;
+
 /**
  * Description of WC_Gateway_TBKAAS
  *
@@ -39,6 +40,9 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
     var $token_servicio;
 
     public function __construct() {
+
+        Logger::log_me_wp("ENTANDO AL CONSTRUCTOR");
+
         $this->id = 'tbkaas';
         $this->icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(__FILE__)) . '/assets/images/logo.png';
         $this->has_fields = false;
@@ -72,6 +76,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         // Payment listener/API hook
         add_action('woocommerce_api_wc_gateway_' . $this->id, array($this, 'tbkaas_api_handler'));
+
+        Logger::log_me_wp("Saliendo AL CONSTRUCTOR");
     }
 
     function init_form_fields() {
@@ -178,7 +184,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         $order = new WC_Order($order_id);
         $id_session = uniqid("", true);
-        
+
         /*
          * Agregamos el id de sesion la OC.
          * Esto permitira que validemos el pago mas tarde
