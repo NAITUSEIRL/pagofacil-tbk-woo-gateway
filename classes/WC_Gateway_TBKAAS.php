@@ -37,7 +37,7 @@ use WC_Order;
 class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
     var $notify_url;
-    
+
     function __construct() {
         $this->id = 'tbkaas';
         $this->icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(__FILE__)) . '/assets/images/logo.png';
@@ -49,8 +49,16 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $this->init_settings();
         // Define user set variables
         $this->title = $this->get_option('title');
-        $this->description = $this->get_option('description').""
-                . "<br> NOTIFICATION URL : <b>$this->notify_url</b>";
+        $this->description = $this->get_option('description');
+
+        
+
+        $this->method_description =  '<ul>'
+                . '<li>URL CALLBACK : ' . $this->notify_url . '</b></i></li>'
+                . '<li>URL FINAL : ' . $this->notify_url . '</b></i></li>'
+                . '</ul>';
+                
+
 
 
         add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
