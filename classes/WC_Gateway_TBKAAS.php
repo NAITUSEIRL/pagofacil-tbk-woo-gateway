@@ -264,6 +264,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
     function tbkaas_api_handler() {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            Logger::log_me_wp("ENTRANDO AL API POR POST");
             $order_id = filter_input(INPUT_POST, "order_id");
             $id_session = filter_input(INPUT_POST, "id_session");
 
@@ -309,6 +310,10 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             //close connection
             curl_close($ch);
             return;
+        }
+        else
+        {
+            Logger::log_me_wp("ENTRANDO AL API SIN POST");
         }
     }
 
