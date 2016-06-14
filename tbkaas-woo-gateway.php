@@ -25,7 +25,7 @@ define("SERVER_TBKAAS", "http://dev-env.sv1.tbk.cristiantala.cl/tbk/v1");
 
 //VARIABLES
 //Funciones
-add_action('plugins_loaded', 'init_WCMPChile');
+add_action('plugins_loaded', 'tbkaaswoogateway\init_WCMPChile');
 function init_WCMPChile() {
     if (!class_exists('WC_Payment_Gateway'))
         return;
@@ -37,5 +37,5 @@ function add_your_gateway_class($methods) {
     $methods[] = 'WC_Gateway_TBKAAS_Chile';
     return $methods;
 }
-add_filter('woocommerce_payment_gateways', 'add_your_gateway_class');
+add_filter('woocommerce_payment_gateways', 'tbkaaswoogateway\add_your_gateway_class');
 ?>
