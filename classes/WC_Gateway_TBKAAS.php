@@ -109,14 +109,14 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             'enabled' => array(
                 'title' => __('Enable/Disable', 'woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Habilita Woocommerce Webpay Plus', 'woocommerce'),
+                'label' => __('Habilita Transbank As A Service', 'woocommerce'),
                 'default' => 'yes'
             ),
             'title' => array(
                 'title' => __('Title', 'woocommerce'),
                 'type' => 'text',
                 'description' => __('', 'woocommerce'),
-                'default' => __('Web Pay Plus WebService', 'woocommerce')
+                'default' => __('Transbank As A Service ( WebpayPlus PST )', 'woocommerce')
             ),
             'description' => array(
                 'title' => __('Customer Message', 'woocommerce'),
@@ -130,7 +130,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                 'description' => "El número de comercio con el cual tienes la cuenta PST",
                 'default' => "",
             ),
-            'token_servicio' => array(
+            'token_service' => array(
                 'title' => "Token Servicio",
                 'type' => 'text',
                 'description' => "Token dado por TBKAAS para la conexión",
