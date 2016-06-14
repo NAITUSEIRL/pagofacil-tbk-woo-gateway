@@ -148,7 +148,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $DOBLEVALIDACION = $this->get_option('doblevalidacion');
         $order = new WC_Order($order_id);
         if ($DOBLEVALIDACION === "yes") {
-            
+
             log_me("Doble Validación Activada / " . $order->status, $sufijo);
             if ($order->status === 'processing' || $order->status === 'completed') {
                 Logger::log_me_wp("ORDEN YA PAGADA (" . $order->status . ") EXISTENTE " . $order_id, "\t" . $sufijo);
@@ -264,64 +264,101 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
     function tbkaas_api_handler() {
 
+        /*
+         * Si llegamos por post verificamos, si no redireccionamos a error.
+         */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            Logger::log_me_wp("ENTRANDO AL API POR POST");
             $order_id = filter_input(INPUT_POST, "order_id");
-            $id_session = filter_input(INPUT_POST, "id_session");
-
-            Logger::log_me_wp("Order ID : $order_id");
-            Logger::log_me_wp("Id  : $id_session");
-
             //Verificamos que la orden exista 
             $order = new WC_Order($order_id);
             if (is_null($order)) {
                 return;
             }
-
             Logger::log_me_wp("Order $order_id existente, continuamos");
-            $id_session_db = get_post_meta($order_id, "_id_session", true);
-            Logger::log_me_wp("ID SEssion en DB : $id_session_db");
+
+            /*
+             * Si la orden no está pagada verificamos.
+             */
 
 
-            if ($id_session_db == $id_session) {
-                Logger::log_me_wp("$id_session == $id_session_db");
-            } else {
-                Logger::log_me_wp("$id_session != $id_session_db");
-                return;
+            $verificado = $this->verificarOrden($order, $order_id);
+
+            /*
+             * Si la orden esta completa cambiamos estado
+             * Si no redireccionamos
+             */
+
+            if ($verificado) {
+                //Completamos la orden
+                $order->payment_complete();
             }
 
-            //Si existe le preguntamos al servidor su estado
-            $fields = array(
-                'codigo_comercio' => $this->get_option("codigo_comercio"),
-                'token_service' => $this->get_option("token_service"),
-                'order_id' => $order_id,
-                'monto' => round($order->order_total),
-                'id_session' => $id_session
-            );
-            $fields_string = "";
-            foreach ($fields as $key => $value) {
-                $fields_string .= $key . '=' . $value . '&';
-            }
-            rtrim($fields_string, '&');
-            //open connection
-            $ch = \curl_init();
-
-            //set the url, number of POST vars, POST data
-            \curl_setopt($ch, CURLOPT_URL, SERVER_TBKAAS_VERIFICAR);
-            \curl_setopt($ch, CURLOPT_POST, count($fields));
-            \curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
-
-            //execute post
-            $result = curl_exec($ch);
-
-            Logger::log_me_wp("Resultado Verificacion : " . $result);
-
-            //close connection
-            curl_close($ch);
-            return;
+            /*
+             * Redireccionamos.
+             */
+            $order_received = $order->get_checkout_order_received_url();
+            wp_redirect($order_received);
+            exit;
+            
+            
         } else {
-            Logger::log_me_wp("ENTRANDO AL API SIN POST");
+            
         }
+    }
+
+    private function verificarOrden($order, $order_id) {
+
+        Logger::log_me_wp("ENTRANDO AL API POR POST");
+
+        $id_session_db = get_post_meta($order_id, "_id_session", true);
+        Logger::log_me_wp("ID SEssion en DB : $id_session_db");
+
+        //Si existe le preguntamos al servidor su estado
+        $fields = array(
+            'codigo_comercio' => $this->get_option("codigo_comercio"),
+            'token_service' => $this->get_option("token_service"),
+            'order_id' => $order_id,
+            'monto' => round($order->order_total),
+            'id_session' => $id_session_db
+        );
+
+        $resultado = $this->executeCurl($fields, SERVER_TBKAAS_VERIFICAR);
+
+        if($resultado == "COMPLETADA")
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+        
+         
+    }
+
+    private function executeCurl(array $fields, $url) {
+
+        $fields_string = "";
+        foreach ($fields as $key => $value) {
+            $fields_string .= $key . '=' . $value . '&';
+        }
+        rtrim($fields_string, '&');
+        //open connection
+        $ch = \curl_init();
+
+        //set the url, number of POST vars, POST data
+        \curl_setopt($ch, CURLOPT_URL, $url);
+        \curl_setopt($ch, CURLOPT_POST, count($fields));
+        \curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+
+        //execute post
+        $result = curl_exec($ch);
+
+        Logger::log_me_wp("Resultado Verificacion : " . $result);
+
+        //close connection
+        curl_close($ch);
+        return $result;
     }
 
 }
