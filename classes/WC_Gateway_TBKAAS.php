@@ -267,27 +267,32 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             Logger::log_me_wp("ENTRANDO AL API POR POST");
             $order_id = filter_input(INPUT_POST, "order_id");
             $id_session = filter_input(INPUT_POST, "id_session");
-            
+
             Logger::log_me_wp("Order ID : $order_id");
-            Logger::log_me_wp("Id Session : $id_session");
+            Logger::log_me_wp("Id  : $id_session");
 
             //Verificamos que la orden exista 
             $order = new WC_Order($order_id);
-            if (is_null($order))
+            if (is_null($order)) {
                 return;
+            }
 
+            Logger::log_me_wp("Order $order_id existente, continuamos");
             $id_session_db = get_post_meta($order_id, "_id_session", true);
+            Logger::log_me_wp("ID SEssion en DB : $id_session_db");
+
 
             if ($id_session_db == $id_session) {
                 Logger::log_me_wp("$id_session == $id_session_db");
             } else {
+                Logger::log_me_wp("$id_session != $id_session_db");
                 return;
             }
 
             //Si existe le preguntamos al servidor su estado
             $fields = array(
                 'codigo_comercio' => $this->get_option("codigo_comercio"),
-                'token_service' => $this->get_option("codigo_comercio"),
+                'token_service' => $this->get_option("token_service"),
                 'order_id' => $order_id,
                 'monto' => round($order->order_total),
                 'id_session' => $id_session
