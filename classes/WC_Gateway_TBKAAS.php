@@ -343,21 +343,25 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         //open connection
         $ch = \curl_init();
 
-        Logger::log_me_wp("String : ". $fields_string);
-        Logger::log_me_wp("URL :". $url);
-        
+        Logger::log_me_wp("String : " . $fields_string);
+        Logger::log_me_wp("URL :" . $url);
+
         //set the url, number of POST vars, POST data
         \curl_setopt($ch, CURLOPT_URL, $url);
         \curl_setopt($ch, CURLOPT_POST, count($fields));
         \curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
 
-        //execute post
-        $result = curl_exec($ch);
-
-        Logger::log_me_wp("Resultado Verificacion : " . $result);
-
+        // Disable SSL verification
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         //close connection
         curl_close($ch);
+        //execute post
+        $result = curl_exec($ch);
+        $info = curl_info($ch);
+        Logger::log_me_wp("Resultado Verificacion : " . $result);
+        Logger::log_me_wp("Resultado Verificacion : " . $info);
+
+
         return $result;
     }
 
