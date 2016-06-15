@@ -333,7 +333,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
     }
 
-    private function executeCurl(array $fields, $url) {
+    private function executeCurl($fields, $url) {
 
         $fields_string = "";
         foreach ($fields as $key => $value) {
@@ -343,6 +343,9 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         //open connection
         $ch = \curl_init();
 
+        Logger::log_me_wp("String : ". $fields_string);
+        Logger::log_me_wp("URL :". $url);
+        
         //set the url, number of POST vars, POST data
         \curl_setopt($ch, CURLOPT_URL, $url);
         \curl_setopt($ch, CURLOPT_POST, count($fields));
