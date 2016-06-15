@@ -268,14 +268,14 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
          * Si llegamos por post verificamos, si no redireccionamos a error.
          */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            
-            Logger::log_me_wp(print_r($_POST,true));
-            
+
+            Logger::log_me_wp(print_r($_POST, true));
+
             $order_id = filter_input(INPUT_POST, "order_id");
             $order_id_sin_filtrp = filter_input(INPUT_POST, "order_id");
-            
+
             Logger::log_me_wp("ORDER _id = $order_id ");
-            
+
             //Verificamos que la orden exista 
             $order = new WC_Order($order_id);
             if (!($order)) {
@@ -306,8 +306,9 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             /*
              * Redireccionamos.
              */
-            $order_received = $order->get_checkout_order_received_url();
-            wp_redirect($order_received);
+//            $order_received = $order->get_checkout_order_received_url();
+//            wp_redirect($order_received);
+            wp_redirect(home_url());
             exit;
         } else {
             
@@ -332,7 +333,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         $resultado = $this->executeCurl($fields, SERVER_TBKAAS_VERIFICAR);
 
-        Logger::log_me_wp("RESULTADO :".  print_r($resultado,true));
+        Logger::log_me_wp("RESULTADO :" . print_r($resultado, true));
 
         if (is_null($resultado)) {
             return FALSE;
