@@ -299,8 +299,6 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             $order_received = $order->get_checkout_order_received_url();
             wp_redirect($order_received);
             exit;
-            
-            
         } else {
             
         }
@@ -324,16 +322,15 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         $resultado = $this->executeCurl($fields, SERVER_TBKAAS_VERIFICAR);
 
-        if($resultado == "COMPLETADA")
-        {
+        Logger::log_me_wp("RESULTADO : $resultado");
+
+        if ($resultado == "COMPLETADA") {
+            Logger::log_me_wp("COMPLETADA");
             return true;
-        }
-        else
-        {
+        } else {
+            Logger::log_me_wp("NO COMPLETADA");
             return false;
         }
-        
-         
     }
 
     private function executeCurl(array $fields, $url) {
