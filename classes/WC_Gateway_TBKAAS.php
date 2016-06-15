@@ -269,12 +269,14 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
          */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            Logger::log_me_wp(print_r($_POST, true));
+
 
             $order_id = filter_input(INPUT_POST, "order_id");
-            $order_id_sin_filtrp = filter_input(INPUT_POST, "order_id");
+            $order_id_mall = filter_input(INPUT_POST, "order_id_mall");
+
 
             Logger::log_me_wp("ORDER _id = $order_id ");
+            Logger::log_me_wp("ORDER _id_mall = $order_id_mall ");
 
             //Verificamos que la orden exista 
             $order = new WC_Order($order_id);
@@ -288,7 +290,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
              */
 
 
-            $verificado = $this->verificarOrden($order, $order_id);
+            $verificado = $this->verificarOrden($order, $order_id, $order_id_mall);
 
             /*
              * Si la orden esta completa cambiamos estado
@@ -315,7 +317,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
     }
 
-    private function verificarOrden($order, $order_id) {
+    private function verificarOrden($order, $order_id, $order_id_mall) {
 
         Logger::log_me_wp("ENTRANDO AL API POR POST");
 
@@ -328,7 +330,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             'token_service' => $this->get_option("token_service"),
             'order_id' => $order_id,
             'monto' => round($order->order_total),
-            'id_session' => $id_session_db
+            'id_session' => $id_session_db,
+            'order_id_mall' => $order_id_mall
         );
 
         $resultado = $this->executeCurl($fields, SERVER_TBKAAS_VERIFICAR);
