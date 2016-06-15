@@ -352,7 +352,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         \curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
 
         // Disable SSL verification
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         //close connection
         curl_close($ch);
         //execute post
