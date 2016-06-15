@@ -325,7 +325,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         $resultado = $this->executeCurl($fields, SERVER_TBKAAS_VERIFICAR);
 
-        Logger::log_me_wp("RESULTADO : $resultado");
+        Logger::log_me_wp("RESULTADO :".  print_r($resultado,true));
 
         if (is_null($resultado)) {
             return FALSE;
