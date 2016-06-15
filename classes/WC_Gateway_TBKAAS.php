@@ -268,7 +268,14 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
          * Si llegamos por post verificamos, si no redireccionamos a error.
          */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            
+            Logger::log_me_wp(print_r($_POST,true));
+            
             $order_id = filter_input(INPUT_POST, "order_id");
+            $order_id_sin_filtrp = filter_input(INPUT_POST, "order_id");
+            
+            Logger::log_me_wp("ORDER _id = $order_id ");
+            
             //Verificamos que la orden exista 
             $order = new WC_Order($order_id);
             if (!($order)) {
