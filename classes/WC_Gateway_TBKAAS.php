@@ -353,7 +353,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         
         \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         \curl_setopt($ch, CURLOPT_HEADER, false);
-        \curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type:application/json'));
+//        \curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type:application/json'));
 
         // Disable SSL verification
         \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -365,9 +365,18 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         curl_close($ch);
         Logger::log_me_wp("Resultado Verificacion : " . $result);
         Logger::log_me_wp("Resultado Verificacion : " . print_r($info,true));
+        
+        if($info["http_code"] == 200)
+        {
+            return $result;
+        }
+        else
+        {
+            return NULL;
+        }
 
 
-        return $result;
+        
     }
 
 }
