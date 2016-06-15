@@ -360,7 +360,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $info = curl_getinfo($ch);
         curl_close($ch);
         Logger::log_me_wp("Resultado Verificacion : " . $result);
-        Logger::log_me_wp("Resultado Verificacion : " . $info);
+        Logger::log_me_wp("Resultado Verificacion : " . print_r($info,true));
 
 
         return $result;
