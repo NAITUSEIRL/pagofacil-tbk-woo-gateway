@@ -290,7 +290,10 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
             if ($verificado) {
                 //Completamos la orden
+                Logger::log_me_wp("PEDIDO COMPLETADO");
                 $order->payment_complete();
+            } else {
+                Logger::log_me_wp("PEDIDO NO COMPLETADO");
             }
 
             /*
