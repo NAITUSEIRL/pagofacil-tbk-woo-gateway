@@ -341,42 +341,33 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
         rtrim($fields_string, '&');
         //open connection
-        $ch = \curl_init();
+        $ch = \curl_init($url);
 
         Logger::log_me_wp("String : " . $fields_string);
         Logger::log_me_wp("URL :" . $url);
 
         //set the url, number of POST vars, POST data
         \curl_setopt($ch, CURLOPT_URL, $url);
-        \curl_setopt($ch, CURLOPT_POST, count($fields));
-        \curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
-        
-        \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        \curl_setopt($ch, CURLOPT_HEADER, false);
-//        \curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type:application/json'));
+//        \curl_setopt($ch, CURLOPT_POST, count($fields));
+        \curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
 
+        \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//        \curl_setopt($ch, CURLOPT_HEADER, false);
+//        \curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type:application/json'));
         // Disable SSL verification
-        \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-     
-        
+//        \curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         //execute post
         $result = curl_exec($ch);
         $info = curl_getinfo($ch);
         curl_close($ch);
         Logger::log_me_wp("Resultado Verificacion : " . $result);
-        Logger::log_me_wp("Resultado Verificacion : " . print_r($info,true));
-        
-        if($info["http_code"] == 200)
-        {
+//        Logger::log_me_wp("Resultado Verificacion : " . print_r($info, true));
+
+        if ($info["http_code"] == 200) {
             return $result;
-        }
-        else
-        {
+        } else {
             return NULL;
         }
-
-
-        
     }
 
 }
