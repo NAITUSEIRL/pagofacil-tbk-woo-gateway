@@ -66,6 +66,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         //Payment listener/API hook
         add_action('woocommerce_api_wc_gateway_' . $this->id, array($this, 'tbkaas_api_handler'));
+        add_action('woocommerce_thankyou_' . $this->id, array($this, 'tbkaas_thankyou_page'));
     }
 
     function init_form_fields() {
@@ -173,8 +174,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         $order = new WC_Order($order_id);
 //        $id_session = uniqid("", true);
-        
-         $token_tienda = (bin2hex(random_bytes(30)));
+
+        $token_tienda = (bin2hex(random_bytes(30)));
 
         /*
          * Agregamos el id de sesion la OC.
@@ -285,11 +286,11 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
 
             $order_id = filter_input(INPUT_POST, "order_id");
-            $order_id_mall = filter_input(INPUT_POST, "order_id_mall");
+
 
 
             Logger::log_me_wp("ORDER _id = $order_id ");
-            Logger::log_me_wp("ORDER _id_mall = $order_id_mall ");
+
 
             //Verificamos que la orden exista 
             $order = new WC_Order($order_id);
@@ -303,7 +304,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
              */
 
 
-            $verificado = $this->verificarOrden($order, $order_id, $order_id_mall);
+            $verificado = $this->verificarOrden($order, $order_id);
 
             /*
              * Si la orden esta completa cambiamos estado
@@ -313,26 +314,75 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             if ($verificado) {
                 //Completamos la orden
                 Logger::log_me_wp("PEDIDO COMPLETADO");
-                $order->payment_complete();
+
+
+
+
+                //Agrego los datos extra
+
+                $detalleOrden = $this->getDetalleOrden($order, $order_id);
+                if (!is_null($detalleOrden)) {
+                    add_post_meta($order_id, '_authorization_code', $detalleOrden->authorization_code, true);
+                    add_post_meta($order_id, '_payment_type_code', $detalleOrden->payment_type_code, true);
+                    add_post_meta($order_id, '_amount', $detalleOrden->amount, true);
+                    add_post_meta($order_id, '_card_number', $detalleOrden->card_number, true);
+                    add_post_meta($order_id, '_shares_number', $detalleOrden->shares_number, true);
+                    add_post_meta($order_id, '_accounting_date', $detalleOrden->accounting_date, true);
+                    add_post_meta($order_id, '_transaction_date', $detalleOrden->transaction_date, true);
+
+                    $order->payment_complete();
+                } else {
+                    Logger::log_me_wp("ERROR AL OBTENER EL DETALLE DE LA ORDEN");
+                    $order->update_status('failed');
+                }
             } else {
                 Logger::log_me_wp("PEDIDO NO COMPLETADO");
+                $order->update_status('failed');
             }
 
             /*
              * Redireccionamos.
              */
 //            $order_received = $order->get_checkout_order_received_url();
-//            wp_redirect($order_received);
-            wp_redirect(home_url());
+            wp_redirect($order_received);
+//            wp_redirect(home_url());
             exit;
         } else {
             
         }
     }
 
-    private function verificarOrden($order, $order_id, $order_id_mall) {
+    function tbkaas_thankyou_page() {
+        echo "<h1>HOLAAAAAAAAAAAAAAAAA</h1>";
+    }
 
-        Logger::log_me_wp("ENTRANDO AL API POR POST");
+    private function getDetalleOrden($order, $order_id) {
+
+        $token_tienda_db = get_post_meta($order_id, "_token_tienda", true);
+        Logger::log_me_wp("TOKEN TIENDA en DB : $token_tienda_db");
+
+        //Si existe le preguntamos al servidor su estado
+        $fields = array(
+            'codigo_comercio' => $this->get_option("codigo_comercio"),
+            'token_service' => $this->get_option("token_service"),
+            'order_id' => $order_id,
+            'token_tienda' => $token_tienda_db,
+        );
+
+        $resultado = $this->executeCurl($fields, SERVER_TBKAAS_DETALLE);
+
+        Logger::log_me_wp("RESULTADO :" . print_r($resultado, true));
+
+        if (is_null($resultado)) {
+            return NULL;
+        } else {
+            return json_decode($resultado)["detalles_transaccion"];
+        }
+    }
+
+    private function verificarOrden($order, $order_id) {
+
+
 
         $token_tienda_db = get_post_meta($order_id, "_token_tienda", true);
         Logger::log_me_wp("TOKEN TIENDA en DB : $token_tienda_db");
@@ -344,7 +394,6 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             'order_id' => $order_id,
             'monto' => round($order->order_total),
             'token_tienda' => $token_tienda_db,
-            'order_id_mall' => $order_id_mall
         );
 
         $resultado = $this->executeCurl($fields, SERVER_TBKAAS_VERIFICAR);

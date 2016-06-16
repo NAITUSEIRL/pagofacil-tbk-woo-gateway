@@ -23,6 +23,7 @@ use tbkaaswoogateway\classes\WC_Gateway_TBKAAS;
 //CONSTANTES
 define("SERVER_TBKAAS", "https://dev-env.sv1.tbk.cristiantala.cl/tbk/v1/initTransaction");
 define("SERVER_TBKAAS_VERIFICAR", "https://dev-env.sv1.tbk.cristiantala.cl/tbk/v1/estadoOrden");
+define("SERVER_TBKAAS_DETALLE", "https://dev-env.sv1.tbk.cristiantala.cl/tbk/v1/getOrden");
 
 //VARIABLES
 //Funciones
