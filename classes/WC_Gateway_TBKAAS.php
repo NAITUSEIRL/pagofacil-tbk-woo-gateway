@@ -172,7 +172,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $SUFIJO = "[WEBPAY - FORM]";
 
         $order = new WC_Order($order_id);
-        $id_session = uniqid("", true);
+//        $id_session = uniqid("", true);
+         $token_tienda = random_bytes(32);
 
         /*
          * Agregamos el id de sesion la OC.
@@ -180,14 +181,14 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
          * Este valor no cambiara para la OC si est que ya está Creado
          * 
          */
-        $id_session_db = get_post_meta($order_id, "_id_session", true);
-        Logger::log_me_wp($id_session_db);
-        if (is_null($id_session_db) || $id_session_db == "") {
-            Logger::log_me_wp("No existe session, la agrego");
-            add_post_meta($order_id, '_id_session', $id_session, true);
+        $token_tienda_db = get_post_meta($order_id, "_token_tienda", true);
+        Logger::log_me_wp($token_tienda_db);
+        if (is_null($token_tienda_db) || $token_tienda_db == "") {
+            Logger::log_me_wp("No existe TOKEN, lo agrego");
+            add_post_meta($order_id, '_token_tienda', $token_tienda, true);
         } else {
             Logger::log_me_wp("Existe session");
-            $id_session = $id_session_db;
+            $token_tienda = $token_tienda_db;
         }
 
 
@@ -197,7 +198,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             'order_id' => $order_id,
             'codigo_comercio' => $this->get_option("codigo_comercio"),
             'token_service' => $this->get_option("token_service"),
-            'id_session' => $id_session,
+            'token_tienda' => $token_tienda,
         );
         Logger::log_me_wp($pago_args, $SUFIJO);
 
@@ -332,8 +333,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         Logger::log_me_wp("ENTRANDO AL API POR POST");
 
-        $id_session_db = get_post_meta($order_id, "_id_session", true);
-        Logger::log_me_wp("ID SEssion en DB : $id_session_db");
+        $token_tienda_db = get_post_meta($order_id, "_token_tienda", true);
+        Logger::log_me_wp("TOKEN TIENDA en DB : $token_tienda_db");
 
         //Si existe le preguntamos al servidor su estado
         $fields = array(
@@ -341,7 +342,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             'token_service' => $this->get_option("token_service"),
             'order_id' => $order_id,
             'monto' => round($order->order_total),
-            'id_session' => $id_session_db,
+            'token_tienda' => $token_tienda_db,
             'order_id_mall' => $order_id_mall
         );
 
