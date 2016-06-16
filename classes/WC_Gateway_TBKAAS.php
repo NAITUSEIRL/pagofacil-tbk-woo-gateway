@@ -376,7 +376,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         if (is_null($resultado)) {
             return NULL;
         } else {
-            return json_decode($resultado)["detalles_transaccion"];
+            $detalle = json_decode($resultado);
+            return $detalle->detalles_transaccion;
         }
     }
 
