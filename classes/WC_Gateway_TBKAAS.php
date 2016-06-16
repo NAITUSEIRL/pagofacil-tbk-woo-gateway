@@ -322,13 +322,13 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
                 $detalleOrden = $this->getDetalleOrden($order, $order_id);
                 if (!is_null($detalleOrden)) {
-                    add_post_meta($order_id, '_authorization_code', $detalleOrden->authorization_code, true);
-                    add_post_meta($order_id, '_payment_type_code', $detalleOrden->payment_type_code, true);
+                    add_post_meta($order_id, '_authorization_code', $detalleOrden->detalles_transaccion->authorization_code, true);
+                    add_post_meta($order_id, '_payment_type_code', $detalleOrden->detalles_transaccion->payment_type_code, true);
                     add_post_meta($order_id, '_amount', $detalleOrden->amount, true);
-                    add_post_meta($order_id, '_card_number', $detalleOrden->card_number, true);
+                    add_post_meta($order_id, '_card_number', $detalleOrden->detalles_transaccion->card_number, true);
                     add_post_meta($order_id, '_shares_number', $detalleOrden->shares_number, true);
-                    add_post_meta($order_id, '_accounting_date', $detalleOrden->accounting_date, true);
-                    add_post_meta($order_id, '_transaction_date', $detalleOrden->transaction_date, true);
+                    add_post_meta($order_id, '_accounting_date', $detalleOrden->detalles_transaccion->accounting_date, true);
+                    add_post_meta($order_id, '_transaction_date', $detalleOrden->detalles_transaccion->transaction_date, true);
 
                     $order->payment_complete();
                 } else {
@@ -343,7 +343,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             /*
              * Redireccionamos.
              */
-//            $order_received = $order->get_checkout_order_received_url();
+            $order_received = $order->get_checkout_order_received_url();
             wp_redirect($order_received);
 //            wp_redirect(home_url());
             exit;
@@ -376,7 +376,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         if (is_null($resultado)) {
             return NULL;
         } else {
-//            $detalle = json_decode($resultado);
+ 
             return $resultado;
         }
     }
