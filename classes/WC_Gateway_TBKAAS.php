@@ -182,16 +182,15 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
          */
         $id_session_db = get_post_meta($order_id, "_id_session", true);
         Logger::log_me_wp($id_session_db);
-        if(is_null($id_session_db))
-        {
+        if (is_null($id_session_db) || $id_session_db == "") {
+            Logger::log_me_wp("No existe session, la agrego");
             add_post_meta($order_id, '_id_session', $id_session, true);
-        }
-        else
-        {
+        } else {
+            Logger::log_me_wp("Existe session");
             $id_session = $id_session_db;
         }
-        
-        
+
+
 
         $pago_args = array(
             'monto' => round($order->order_total),
