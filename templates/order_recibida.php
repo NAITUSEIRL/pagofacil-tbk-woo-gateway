@@ -9,6 +9,8 @@ $fields = array(
     "Fecha Contable" => get_post_meta($order_id, "_accounting_date", true),
     "Fecha Transacción" => get_post_meta($order_id, "_transaction_date", true),
 );
+
+\tbkaaswoogateway\classes\Logger::log_me_wp($fields);
 ?>
 <h2><?php "Detalles de la Transacción"; ?></h2>
 <table class="shop_table order_details">
