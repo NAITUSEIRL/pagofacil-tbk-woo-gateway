@@ -283,14 +283,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
          */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-
-
             $order_id = filter_input(INPUT_POST, "order_id");
-
-
-
             Logger::log_me_wp("ORDER _id = $order_id ");
-
 
             //Verificamos que la orden exista 
             $order = new WC_Order($order_id);
@@ -302,10 +296,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             /*
              * Si la orden no está pagada verificamos.
              */
-
-
             $verificado = $this->verificarOrden($order, $order_id);
-
             /*
              * Si la orden esta completa cambiamos estado
              * Si no redireccionamos
@@ -321,7 +312,10 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                 //Agrego los datos extra
 
                 $detalleOrden = $this->getDetalleOrden($order, $order_id);
-                if (!is_null($detalleOrden)) {
+                if ($detalleOrden) {
+                    
+                    Logger::log_me_wp($detalleOrden);
+                    
                     add_post_meta($order_id, '_authorization_code', $detalleOrden->detalles_transaccion->authorization_code, true);
                     add_post_meta($order_id, '_payment_type_code', $detalleOrden->detalles_transaccion->payment_type_code, true);
                     add_post_meta($order_id, '_amount', $detalleOrden->detalles_transaccion->amount, true);
