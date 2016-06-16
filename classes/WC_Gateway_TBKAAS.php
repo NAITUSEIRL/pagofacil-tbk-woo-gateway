@@ -173,7 +173,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         $order = new WC_Order($order_id);
 //        $id_session = uniqid("", true);
-         $token_tienda = random_bytes(32);
+        
+         $token_tienda = var_dump(bin2hex(random_bytes(32)));
 
         /*
          * Agregamos el id de sesion la OC.
