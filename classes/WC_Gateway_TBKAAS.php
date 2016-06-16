@@ -352,8 +352,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
     }
 
-    function tbkaas_thankyou_page() {
-        echo "<h1>HOLAAAAAAAAAAAAAAAAA</h1>";
+    function tbkaas_thankyou_page($order_id) {
+        include( plugin_dir_path( __FILE__ ) . 'templates/order_recibida.php');
     }
 
     private function getDetalleOrden($order, $order_id) {
