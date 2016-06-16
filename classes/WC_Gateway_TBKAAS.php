@@ -303,7 +303,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
              */
 
             if ($verificado) {
-                //Completamos la orden
+                //Completamos la orden 
                 Logger::log_me_wp("PEDIDO COMPLETADO");
 
 
@@ -313,9 +313,9 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
                 $detalleOrden = $this->getDetalleOrden($order, $order_id);
                 if ($detalleOrden) {
-                    
+
                     Logger::log_me_wp($detalleOrden);
-                    
+
                     add_post_meta($order_id, '_authorization_code', $detalleOrden->detalles_transaccion->authorization_code, true);
                     add_post_meta($order_id, '_payment_type_code', $detalleOrden->detalles_transaccion->payment_type_code, true);
                     add_post_meta($order_id, '_amount', $detalleOrden->detalles_transaccion->amount, true);
@@ -348,7 +348,13 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
     function tbkaas_thankyou_page($order_id) {
         Logger::log_me_wp("Entrando a Pedido Recibido de $order_id");
-        include( plugin_dir_path( __FILE__ ) . '../templates/order_recibida.php');
+        $order = new WC_Order($order_id);
+
+        if ($order->status === 'processing' || $order->status === 'complete') {
+            include( plugin_dir_path(__FILE__) . '../templates/order_recibida.php');
+        } else {
+            include( plugin_dir_path(__FILE__) . '../templates/orden_fallida.php');
+        }
     }
 
     private function getDetalleOrden($order, $order_id) {
@@ -371,7 +377,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         if (is_null($resultado)) {
             return NULL;
         } else {
- 
+
             return $resultado;
         }
     }

@@ -1,5 +1,4 @@
 <?php
-
 $fields = array(
     "Código de autorización" => get_post_meta($order_id, "_authorization_code", true),
     "Tipo de Pago" => get_post_meta($order_id, "_payment_type_code", true),
@@ -10,9 +9,28 @@ $fields = array(
     "Fecha Transacción" => get_post_meta($order_id, "_transaction_date", true),
 );
 
+switch ($fields["Tipo de Pago"]) {
+    case "VD":
+        $fields["Tipo de Pago"] = "Débito";
+        $fields["Tipo de Cuotas"] = "Venta Débito";
+        break;
+    case "VN":
+        $fields["Tipo de Pago"] = "Crédito";
+        $fields["Tipo de Cuotas"] = "Sin Cuotas";
+        break;
+    case "VC":
+        $fields["Tipo de Pago"] = "Crédito";
+        $fields["Tipo de Cuotas"] = "Cuotas normales";
+        break;
+    default:
+        $fields["Tipo de Pago"] = "Crédito";
+        $fields["Tipo de Cuotas"] = "Sin interés";
+        break;
+}
+
 \tbkaaswoogateway\classes\Logger::log_me_wp($fields);
 ?>
-<h2><?php "Detalles de la Transacción"; ?></h2>
+<h2><?php echo "Detalles de la Transacción"; ?></h2>
 <table class="shop_table order_details">
     <thead>
         <tr>
