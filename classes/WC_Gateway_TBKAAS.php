@@ -324,9 +324,9 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                 if (!is_null($detalleOrden)) {
                     add_post_meta($order_id, '_authorization_code', $detalleOrden->detalles_transaccion->authorization_code, true);
                     add_post_meta($order_id, '_payment_type_code', $detalleOrden->detalles_transaccion->payment_type_code, true);
-                    add_post_meta($order_id, '_amount', $detalleOrden->amount, true);
+                    add_post_meta($order_id, '_amount', $detalleOrden->detalles_transaccion->amount, true);
                     add_post_meta($order_id, '_card_number', $detalleOrden->detalles_transaccion->card_number, true);
-                    add_post_meta($order_id, '_shares_number', $detalleOrden->shares_number, true);
+                    add_post_meta($order_id, '_shares_number', $detalleOrden->detalles_transaccion->shares_number, true);
                     add_post_meta($order_id, '_accounting_date', $detalleOrden->detalles_transaccion->accounting_date, true);
                     add_post_meta($order_id, '_transaction_date', $detalleOrden->detalles_transaccion->transaction_date, true);
 
