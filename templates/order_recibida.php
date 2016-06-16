@@ -23,8 +23,8 @@ $fields = array(
         foreach ($fields as $field => $key) {
 
             echo "<tr>";
-            echo "<td>$key</td>";
             echo "<td>$field</td>";
+            echo "<td>$key</td>";
             echo "</tr>";
         }
         ?>

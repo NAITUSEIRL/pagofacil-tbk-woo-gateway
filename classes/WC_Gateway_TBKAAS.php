@@ -353,6 +353,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
     }
 
     function tbkaas_thankyou_page($order_id) {
+        Logger::log_me_wp("Entrando a Pedido Recibido de $order_id");
         include( plugin_dir_path( __FILE__ ) . '../templates/order_recibida.php');
     }
 
