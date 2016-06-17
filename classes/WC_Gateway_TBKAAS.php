@@ -40,7 +40,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
     function __construct() {
         $this->id = 'tbkaas';
-        $this->icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(__FILE__)) . '/assets/images/logo.png';
+        $this->icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(__FILE__)) . '/../assets/images/logo.png';
         $this->has_fields = false;
         $this->method_title = 'Transbank As A Service';
         $this->notify_url = WC()->api_request_url('WC_Gateway_TBKAAS');
