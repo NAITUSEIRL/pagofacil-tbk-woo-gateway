@@ -283,6 +283,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
          */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+
+
             $order_id = filter_input(INPUT_POST, "order_id");
             Logger::log_me_wp("ORDER _id = $order_id ");
 
@@ -292,6 +294,23 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                 return;
             }
             Logger::log_me_wp("Order $order_id existente, continuamos");
+
+
+            /*
+             * Revisamos si existe el parámetro DUPLICADA
+             */
+            $duplicada = filter_input(INPUT_POST, "DUPLICADA");
+
+            if ($duplicada) {
+                
+                //Si llegamos acá se intentó pagar una orden duplicada.
+                //Mostramos la página de rechazo.
+                Logger::log_me_wp("Se intentó el pago de una OC duplicada");
+                get_header();
+                include( plugin_dir_path(__FILE__) . '../templates/orden_fallida.php');
+                get_footer();
+                exit();
+            }
 
             /*
              * Si la orden no está pagada verificamos.
