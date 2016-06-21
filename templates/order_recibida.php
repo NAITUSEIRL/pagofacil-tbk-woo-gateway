@@ -1,5 +1,6 @@
 <?php
 $fields = array(
+    "OC Mall" => get_post_meta($order_id, "_order_id_mall", true),
     "Código de autorización" => get_post_meta($order_id, "_authorization_code", true),
     "Tipo de Pago" => get_post_meta($order_id, "_payment_type_code", true),
     "Monto" => get_post_meta($order_id, "_amount", true),

@@ -283,10 +283,9 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
          */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-
-
             $order_id = filter_input(INPUT_POST, "order_id");
-            Logger::log_me_wp("ORDER _id = $order_id ");
+            $order_id_mall = filter_input(INPUT_POST, "order_id_mall");
+            Logger::log_me_wp("ORDER _id = $order_id || ORDER _id MALL $order_id_mall");
 
             //Verificamos que la orden exista 
             $order = new WC_Order($order_id);
@@ -302,7 +301,6 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             $duplicada = filter_input(INPUT_POST, "DUPLICADA");
 
             if ($duplicada) {
-                
                 //Si llegamos acá se intentó pagar una orden duplicada.
                 //Mostramos la página de rechazo.
                 Logger::log_me_wp("Se intentó el pago de una OC duplicada");
@@ -335,6 +333,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
                     Logger::log_me_wp($detalleOrden);
 
+                    add_post_meta($order_id, '_order_id_mall', $order_id_mall, true);
                     add_post_meta($order_id, '_authorization_code', $detalleOrden->detalles_transaccion->authorization_code, true);
                     add_post_meta($order_id, '_payment_type_code', $detalleOrden->detalles_transaccion->payment_type_code, true);
                     add_post_meta($order_id, '_amount', $detalleOrden->detalles_transaccion->amount, true);
@@ -402,8 +401,6 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
     }
 
     private function verificarOrden($order, $order_id) {
-
-
 
         $token_tienda_db = get_post_meta($order_id, "_token_tienda", true);
         Logger::log_me_wp("TOKEN TIENDA en DB : $token_tienda_db");

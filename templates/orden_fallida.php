@@ -7,6 +7,7 @@
 ?>
 
 <h2><?php echo "Transacción Rechazada N° $order_id"; ?></h2>
+<h4><?php echo "Transacción Mall N° $order_id_mall"; ?></h4>
 
 <p>
 
@@ -23,11 +24,5 @@
         Tarjeta aún no habilitada en el sistema financiero.  
     </li>
 </ul>
-
-·         
-
-·         
-
-·         
 
 </p> 
