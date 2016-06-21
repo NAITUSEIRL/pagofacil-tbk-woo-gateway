@@ -285,6 +285,9 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
             $order_id = filter_input(INPUT_POST, "order_id");
             $order_id_mall = filter_input(INPUT_POST, "order_id_mall");
+
+
+
             Logger::log_me_wp("ORDER _id = $order_id || ORDER _id MALL $order_id_mall");
 
             //Verificamos que la orden exista 
@@ -292,6 +295,11 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             if (!($order)) {
                 return;
             }
+            /*
+             * Agregamos el N DE OC MALL a la orden.
+             */
+            add_post_meta($order_id, '_order_id_mall', $order_id_mall, true);
+            
             Logger::log_me_wp("Order $order_id existente, continuamos");
 
 
@@ -371,6 +379,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         if ($order->status === 'processing' || $order->status === 'complete') {
             include( plugin_dir_path(__FILE__) . '../templates/order_recibida.php');
         } else {
+            $order_id_mall = get_post_meta($order_id, "_order_id_mall", true);
             include( plugin_dir_path(__FILE__) . '../templates/orden_fallida.php');
         }
     }
