@@ -37,6 +37,7 @@ use WC_Order;
 class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
     var $notify_url;
+    var $tbkaas_base_url;
 
     function __construct() {
         $this->id = 'tbkaas';
@@ -44,6 +45,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $this->has_fields = false;
         $this->method_title = 'Transbank As A Service';
         $this->notify_url = WC()->api_request_url('WC_Gateway_TBKAAS');
+
         // Load the settings.
         $this->init_form_fields();
         $this->init_settings();
@@ -51,6 +53,12 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
 
+        $modo_desarrollo = $this->get_option('desarrollo');
+        if ($modo_desarrollo === "yes") {
+            $this->tbkaas_base_url = SERVER_DESARROLLO;
+        } else {
+            $this->tbkaas_base_url = SERVER_PRODUCCION;
+        }
 
 
         $this->method_description = '<ul>'
@@ -172,18 +180,10 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
     }
 
     function generate_TBKAAS_form($order_id) {
-        
-        $modo_desarrollo = $this->get_option('desarrollo');
-        if($modo_desarrollo==="yes")
-        {
-            $formPostAddress = SERVER_DESARROLLO.SERVER_TBKAAS;
-        }
-        else
-        {
-            $formPostAddress = SERVER_PRODUCCION.SERVER_TBKAAS;
-        }
-        
 
+
+
+        $formPostAddress = $this->tbkaas_base_url . SERVER_TBKAAS;
         Logger::log_me_wp($formPostAddress);
 
         $SUFIJO = "[WEBPAY - FORM]";
@@ -301,9 +301,105 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
          * Si llegamos por post verificamos, si no redireccionamos a error.
          */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->procesoCompletado(INPUT_POST);
+        } else {
+            die("NO PERMITIDO");
+        }
+    }
 
-            $order_id = filter_input(INPUT_POST, "order_id");
-            $order_id_mall = filter_input(INPUT_POST, "order_id_mall");
+    function tbkaas_thankyou_page($order_id) {
+        Logger::log_me_wp("Entrando a Pedido Recibido de $order_id");
+        $order = new WC_Order($order_id);
+
+        if ($order->status === 'processing' || $order->status === 'complete') {
+            include( plugin_dir_path(__FILE__) . '../templates/order_recibida.php');
+        } else {
+            $order_id_mall = get_post_meta($order_id, "_order_id_mall", true);
+            include( plugin_dir_path(__FILE__) . '../templates/orden_fallida.php');
+        }
+    }
+
+    private function getDetalleOrden($order, $order_id) {
+
+        $token_tienda_db = get_post_meta($order_id, "_token_tienda", true);
+        Logger::log_me_wp("TOKEN TIENDA en DB : $token_tienda_db");
+
+        //Si existe le preguntamos al servidor su estado
+        $fields = array(
+            'codigo_comercio' => $this->get_option("codigo_comercio"),
+            'token_service' => $this->get_option("token_service"),
+            'order_id' => $order_id,
+            'token_tienda' => $token_tienda_db,
+        );
+
+        $resultado = $this->executeCurl($fields, $this->tbkaas_base_url.SERVER_TBKAAS_DETALLE);
+
+        Logger::log_me_wp("RESULTADO :" . print_r($resultado, true));
+
+        if (is_null($resultado)) {
+            return NULL;
+        } else {
+
+            return $resultado;
+        }
+    }
+
+    private function verificarOrden($order, $order_id) {
+
+        $token_tienda_db = get_post_meta($order_id, "_token_tienda", true);
+        Logger::log_me_wp("TOKEN TIENDA en DB : $token_tienda_db");
+
+        //Si existe le preguntamos al servidor su estado
+        $fields = array(
+            'codigo_comercio' => $this->get_option("codigo_comercio"),
+            'token_service' => $this->get_option("token_service"),
+            'order_id' => $order_id,
+            'monto' => round($order->order_total),
+            'token_tienda' => $token_tienda_db,
+        );
+
+        $resultado = $this->executeCurl($fields, $this->tbkaas_base_url.SERVER_TBKAAS_VERIFICAR);
+
+        Logger::log_me_wp("RESULTADO :" . print_r($resultado, true));
+
+        if (is_null($resultado)) {
+            return FALSE;
+        } else {
+            if ($resultado->ESTADO == "COMPLETADA") {
+                Logger::log_me_wp("COMPLETADA");
+                return true;
+            } else {
+                Logger::log_me_wp("NO COMPLETADA");
+                return false;
+            }
+        }
+    }
+
+    private function executeCurl($fields, $url) {
+
+        $ch = \curl_init($url);
+
+        \curl_setopt($ch, CURLOPT_URL, $url);
+        \curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+        \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $result = curl_exec($ch);
+        $info = curl_getinfo($ch);
+        curl_close($ch);
+        Logger::log_me_wp("Resultado Verificacion : " . $result);
+
+        if ($info["http_code"] == 200) {
+            return json_decode($result);
+        } else {
+            return NULL;
+        }
+    }
+    
+    private function procesoCompletado($POST) {
+        
+
+            $order_id = filter_input($POST, "order_id");
+            $order_id_mall = filter_input($POST, "order_id_mall");
 
 
 
@@ -384,99 +480,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
              */
             $order_received = $order->get_checkout_order_received_url();
             wp_redirect($order_received);
-//            wp_redirect(home_url());
             exit;
-        } else {
-            
-        }
-    }
-
-    function tbkaas_thankyou_page($order_id) {
-        Logger::log_me_wp("Entrando a Pedido Recibido de $order_id");
-        $order = new WC_Order($order_id);
-
-        if ($order->status === 'processing' || $order->status === 'complete') {
-            include( plugin_dir_path(__FILE__) . '../templates/order_recibida.php');
-        } else {
-            $order_id_mall = get_post_meta($order_id, "_order_id_mall", true);
-            include( plugin_dir_path(__FILE__) . '../templates/orden_fallida.php');
-        }
-    }
-
-    private function getDetalleOrden($order, $order_id) {
-
-        $token_tienda_db = get_post_meta($order_id, "_token_tienda", true);
-        Logger::log_me_wp("TOKEN TIENDA en DB : $token_tienda_db");
-
-        //Si existe le preguntamos al servidor su estado
-        $fields = array(
-            'codigo_comercio' => $this->get_option("codigo_comercio"),
-            'token_service' => $this->get_option("token_service"),
-            'order_id' => $order_id,
-            'token_tienda' => $token_tienda_db,
-        );
-
-        $resultado = $this->executeCurl($fields, SERVER_TBKAAS_DETALLE);
-
-        Logger::log_me_wp("RESULTADO :" . print_r($resultado, true));
-
-        if (is_null($resultado)) {
-            return NULL;
-        } else {
-
-            return $resultado;
-        }
-    }
-
-    private function verificarOrden($order, $order_id) {
-
-        $token_tienda_db = get_post_meta($order_id, "_token_tienda", true);
-        Logger::log_me_wp("TOKEN TIENDA en DB : $token_tienda_db");
-
-        //Si existe le preguntamos al servidor su estado
-        $fields = array(
-            'codigo_comercio' => $this->get_option("codigo_comercio"),
-            'token_service' => $this->get_option("token_service"),
-            'order_id' => $order_id,
-            'monto' => round($order->order_total),
-            'token_tienda' => $token_tienda_db,
-        );
-
-        $resultado = $this->executeCurl($fields, SERVER_TBKAAS_VERIFICAR);
-
-        Logger::log_me_wp("RESULTADO :" . print_r($resultado, true));
-
-        if (is_null($resultado)) {
-            return FALSE;
-        } else {
-            if ($resultado->ESTADO == "COMPLETADA") {
-                Logger::log_me_wp("COMPLETADA");
-                return true;
-            } else {
-                Logger::log_me_wp("NO COMPLETADA");
-                return false;
-            }
-        }
-    }
-
-    private function executeCurl($fields, $url) {
-
-        $ch = \curl_init($url);
-
-        \curl_setopt($ch, CURLOPT_URL, $url);
-        \curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-        \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        $result = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
-        Logger::log_me_wp("Resultado Verificacion : " . $result);
-
-        if ($info["http_code"] == 200) {
-            return json_decode($result);
-        } else {
-            return NULL;
-        }
     }
 
 }
