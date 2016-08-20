@@ -18,11 +18,15 @@ include_once 'vendor/autoload.php';
 //use tbkaaswoogateway\classes\Logger;
 use tbkaaswoogateway\classes\WC_Gateway_TBKAAS;
 
+//SERVIDORES
+define("SERVER_DESARROLLO", "https://dev-env.sv1.tbk.cristiantala.cl/tbk/v1/");
+define("SERVER_PRODUCCION", "https://sv1.tbk.cristiantala.cl/tbk/v1/");
+
 //CONSTANTES
 define("SERVER_BASE", "https://sv1.tbk.cristiantala.cl/tbk/v1/");
-define("SERVER_TBKAAS", SERVER_BASE . "initTransaction");
-define("SERVER_TBKAAS_VERIFICAR", SERVER_BASE . "estadoOrden");
-define("SERVER_TBKAAS_DETALLE", SERVER_BASE . "getOrden");
+define("SERVER_TBKAAS", "initTransaction");
+define("SERVER_TBKAAS_VERIFICAR", "estadoOrden");
+define("SERVER_TBKAAS_DETALLE", "getOrden");
 
 //VARIABLES
 //Funciones

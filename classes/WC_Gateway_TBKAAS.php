@@ -78,11 +78,17 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                 'label' => __('Habilita Transbank As A Service', 'woocommerce'),
                 'default' => 'yes'
             ),
+            'desarrollo' => array(
+                'title' => __('Enable/Disable', 'woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Habilita el modo de pruebas', 'woocommerce'),
+                'default' => 'no'
+            ),
             'title' => array(
                 'title' => __('Title', 'woocommerce'),
                 'type' => 'text',
                 'description' => __('', 'woocommerce'),
-                'default' => __('Transbank As A Service ( WebpayPlus PST )', 'woocommerce')
+                'default' => __('WebpayPlust PST', 'woocommerce')
             ),
             'description' => array(
                 'title' => __('Customer Message', 'woocommerce'),
@@ -166,15 +172,28 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
     }
 
     function generate_TBKAAS_form($order_id) {
-        $formPostAddress = SERVER_TBKAAS;
+        
+        $modo_desarrollo = $this->get_option('desarrollo');
+        if($modo_desarrollo==="yes")
+        {
+            $formPostAddress = SERVER_DESARROLLO;
+        }
+        else
+        {
+            $formPostAddress = SERVER_PRODUCCION;
+        }
+        
 
         Logger::log_me_wp($formPostAddress);
 
         $SUFIJO = "[WEBPAY - FORM]";
 
         $order = new WC_Order($order_id);
-//        $id_session = uniqid("", true);
 
+
+        /*
+         * Este es el token que representará la transaccion.
+         */
         $token_tienda = (bin2hex(random_bytes(30)));
 
         /*
@@ -219,26 +238,26 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
              * Esto hace que sea enviada automáticamente el formulario.
              */
             wc_enqueue_js('
-			$.blockUI({
-					message: "' . esc_js(__('Gracias por tu orden. Estamos redireccionando a Transbank')) . '",
-					baseZ: 99999,
-					overlayCSS:
-					{
-						background: "#fff",
-						opacity: 0.6
-					},
-					css: {
-						padding:        "20px",
-						zindex:         "9999999",
-						textAlign:      "center",
-						color:          "#555",
-						border:         "3px solid #aaa",
-						backgroundColor:"#fff",
-						cursor:         "wait",
-						lineHeight:		"24px",
-					}
-				});
-			jQuery("#submit_tbkaas_payment_form").click();
+            $.blockUI({
+                            message: "' . esc_js(__('Gracias por tu orden. Estamos redireccionando a Transbank')) . '",
+                            baseZ: 99999,
+                            overlayCSS:
+                            {
+                                    background: "#fff",
+                                    opacity: 0.6
+                            },
+                            css: {
+                                    padding:        "20px",
+                                    zindex:         "9999999",
+                                    textAlign:      "center",
+                                    color:          "#555",
+                                    border:         "3px solid #aaa",
+                                    backgroundColor:"#fff",
+                                    cursor:         "wait",
+                                    lineHeight:		"24px",
+                            }
+                    });
+            jQuery("#submit_tbkaas_payment_form").click();
 		');
         }
 
@@ -299,7 +318,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
              * Agregamos el N DE OC MALL a la orden.
              */
             add_post_meta($order_id, '_order_id_mall', $order_id_mall, true);
-            
+
             Logger::log_me_wp("Order $order_id existente, continuamos");
 
 
