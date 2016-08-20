@@ -176,11 +176,11 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $modo_desarrollo = $this->get_option('desarrollo');
         if($modo_desarrollo==="yes")
         {
-            $formPostAddress = SERVER_DESARROLLO;
+            $formPostAddress = SERVER_DESARROLLO.SERVER_TBKAAS;
         }
         else
         {
-            $formPostAddress = SERVER_PRODUCCION;
+            $formPostAddress = SERVER_PRODUCCION.SERVER_TBKAAS;
         }
         
 
