@@ -4,9 +4,46 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "59f7c62e25baeedc2a95a4da914c85f1",
-    "content-hash": "e76ac78f4840abbdef302f7a983e1af0",
+    "hash": "a193b92983cc08ad13bb0fa890db04eb",
+    "content-hash": "d5d0f345338e45b570e6045c1302efd1",
     "packages": [
+        {
+            "name": "ctala/transaccion-default",
+            "version": "dev-devel",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/NAITUSEIRL/transaccion-default.git",
+                "reference": "59d88ee747b97d86d3ca13f5443512c5ffc400f5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/NAITUSEIRL/transaccion-default/zipball/59d88ee747b97d86d3ca13f5443512c5ffc400f5",
+                "reference": "59d88ee747b97d86d3ca13f5443512c5ffc400f5",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ctala\\transaccion\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cristian Tala Sanchez",
+                    "email": "yomismo@cristiantala.cl"
+                }
+            ],
+            "description": "Libreria base para generar transacciones con TBKAAS",
+            "keywords": [
+                " libreria",
+                "extension"
+            ],
+            "time": "2016-08-23 18:50:38"
+        },
         {
             "name": "paragonie/random_compat",
             "version": "v2.0.2",
@@ -59,7 +96,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "ctala/transaccion-default": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

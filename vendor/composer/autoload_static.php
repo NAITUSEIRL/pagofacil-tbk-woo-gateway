@@ -16,6 +16,10 @@ class ComposerStaticInite827fcaa7322a05cf19b7141e8701d7c
             'tbkaaswoogateway\\helpers\\' => 25,
             'tbkaaswoogateway\\classes\\' => 25,
         ),
+        'c' => 
+        array (
+            'ctala\\transaccion\\' => 18,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -26,6 +30,10 @@ class ComposerStaticInite827fcaa7322a05cf19b7141e8701d7c
         'tbkaaswoogateway\\classes\\' => 
         array (
             0 => __DIR__ . '/../..' . '/classes',
+        ),
+        'ctala\\transaccion\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ctala/transaccion-default',
         ),
     );
 

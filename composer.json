@@ -8,9 +8,11 @@
             "email": "yomismo@cristiantala.cl"
         }
     ],
+ 
     "require": {
         "php": ">=5.4.0",
-        "paragonie/random_compat": "^2.0"
+        "paragonie/random_compat": "^2.0",
+        "ctala/transaccion-default": "dev-devel"
     },
     "autoload": {
         "psr-4": {

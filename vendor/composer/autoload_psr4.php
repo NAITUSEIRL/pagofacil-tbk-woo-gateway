@@ -8,4 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'tbkaaswoogateway\\helpers\\' => array($baseDir . '/helpers'),
     'tbkaaswoogateway\\classes\\' => array($baseDir . '/classes'),
+    'ctala\\transaccion\\' => array($vendorDir . '/ctala/transaccion-default'),
 );

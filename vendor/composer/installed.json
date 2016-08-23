@@ -48,5 +48,44 @@
             "pseudorandom",
             "random"
         ]
+    },
+    {
+        "name": "ctala/transaccion-default",
+        "version": "dev-devel",
+        "version_normalized": "dev-devel",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/NAITUSEIRL/transaccion-default.git",
+            "reference": "59d88ee747b97d86d3ca13f5443512c5ffc400f5"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/NAITUSEIRL/transaccion-default/zipball/59d88ee747b97d86d3ca13f5443512c5ffc400f5",
+            "reference": "59d88ee747b97d86d3ca13f5443512c5ffc400f5",
+            "shasum": ""
+        },
+        "time": "2016-08-23 18:50:38",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "ctala\\transaccion\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Cristian Tala Sanchez",
+                "email": "yomismo@cristiantala.cl"
+            }
+        ],
+        "description": "Libreria base para generar transacciones con TBKAAS",
+        "keywords": [
+            " libreria",
+            "extension"
+        ]
     }
 ]
