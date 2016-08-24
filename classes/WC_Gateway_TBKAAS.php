@@ -504,7 +504,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
     }
 
     private function procesarCallback($POST) {
-        $order_id = filter_input($POST, "order_id");
+        $order_id = filter_input($POST, "ct_order_id");
         //Verificamos que la orden exista 
         $order = new WC_Order($order_id);
         if (!($order)) {
