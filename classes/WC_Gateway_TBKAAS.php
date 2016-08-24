@@ -410,7 +410,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
     }
 
     private function procesoCompletado($POST) {
-
+        Logger::log_me_wp("Iniciando el proceso completado ");
         /*
          * Revisamos si existe el parámetro DUPLICADA
          */
