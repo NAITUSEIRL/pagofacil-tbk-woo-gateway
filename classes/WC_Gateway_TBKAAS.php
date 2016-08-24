@@ -453,7 +453,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
              * Si el mensaje está validado verifico que la orden sea haya completado.
              * Si se completó la marco como completa y agrego los meta datos
              */
-            $response->ct_estado;
+            $ct_estado = $response->ct_estado;
             Logger::log_me_wp("ESTADO DE LA ORDEN : $ct_estado");
 
             if ($ct_estado == "COMPLETADA") {
@@ -552,7 +552,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         $response = new Response($ct_order_id, $ct_token_tienda, $ct_monto, $ct_token_service, $ct_estado, $ct_authorization_code, $ct_payment_type_code, $ct_card_number, $ct_card_expiration_date, $ct_shares_number, $ct_accounting_date, $ct_transaction_date, $ct_order_id_mall);
         $response->setCt_token_secret($this->token_secret);
-        
+
         return $response;
     }
 
