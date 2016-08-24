@@ -465,6 +465,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             } else {
                 Logger::log_me_wp("Orden $order_id marcada fallida");
                 $order->update_status('failed');
+                add_post_meta($order_id, '_order_id_mall', $response->ct_order_id_mall, true);
             }
         } else {
             Logger::log_me_wp("Firmas NO Corresponden");
