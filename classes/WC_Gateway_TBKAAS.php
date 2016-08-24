@@ -224,13 +224,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         $pago_args = $transaccion->getArrayResponse();
 
-//        $pago_args = array(
-//        'monto' =>,
-//        'order_id' => $order_id,
-//        'codigo_comercio' => $this->get_option("codigo_comercio"),
-//        'token_service' => $this->get_option("token_service"),
-//        'token_tienda' => $token_tienda,
-//        );
+
         Logger::log_me_wp($pago_args, $SUFIJO);
 
         foreach ($pago_args as $key => $value) {
@@ -417,13 +411,25 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
     private function procesoCompletado($POST) {
 
+        /*
+         * Revisamos si existe el parámetro DUPLICADA
+         */
+        $duplicada = filter_input(INPUT_POST, "DUPLICADA");
+
+        if ($duplicada) {
+            //Si llegamos acá se intentó pagar una orden duplicada.
+            //Mostramos la página de rechazo.
+            Logger::log_me_wp("Se intentó el pago de una OC duplicada");
+            get_header();
+            include( plugin_dir_path(__FILE__) . '../templates/orden_fallida.php');
+            get_footer();
+            exit();
+        }
 
         $order_id = filter_input($POST, "ct_order_id");
-        $order_id_mall = filter_input($POST, "ct_order_id_mall");
 
 
-
-        Logger::log_me_wp("ORDER _id = $order_id || ORDER _id MALL $order_id_mall");
+        Logger::log_me_wp("ORDER _id = $order_id");
 
         //Verificamos que la orden exista 
         $order = new WC_Order($order_id);
@@ -431,80 +437,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             return;
         }
 
-        /*
-         * Si la orden se está procesando o está completa ya recibimos los datos con aterioridad.
-         */
-        if ($order->status === 'processing' || $order->status === 'completed') {
-            /*
-             * Agregamos el N DE OC MALL a la orden.
-             */
-            add_post_meta($order_id, '_order_id_mall', $order_id_mall, true);
-
-            Logger::log_me_wp("Order $order_id existente, continuamos");
-
-
-            /*
-             * Revisamos si existe el parámetro DUPLICADA
-             */
-            $duplicada = filter_input(INPUT_POST, "DUPLICADA");
-
-            if ($duplicada) {
-                //Si llegamos acá se intentó pagar una orden duplicada.
-                //Mostramos la página de rechazo.
-                Logger::log_me_wp("Se intentó el pago de una OC duplicada");
-                get_header();
-                include( plugin_dir_path(__FILE__) . '../templates/orden_fallida.php');
-                get_footer();
-                exit();
-            }
-
-            /*
-             * Si la orden no está pagada verificamos.
-             */
-            $verificado = $this->verificarOrden($order, $order_id);
-            /*
-             * Si la orden esta completa cambiamos estado
-             * Si no redireccionamos
-             */
-
-            if ($verificado) {
-                //Completamos la orden 
-                Logger::log_me_wp("PEDIDO COMPLETADO");
-
-
-
-
-                //Agrego los datos extra
-
-                $detalleOrden = $this->getDetalleOrden($order, $order_id);
-                if ($detalleOrden) {
-
-                    Logger::log_me_wp($detalleOrden);
-
-                    add_post_meta($order_id, '_order_id_mall', $order_id_mall, true);
-                    add_post_meta($order_id, '_authorization_code', $detalleOrden->detalles_transaccion->authorization_code, true);
-                    add_post_meta($order_id, '_payment_type_code', $detalleOrden->detalles_transaccion->payment_type_code, true);
-                    add_post_meta($order_id, '_amount', $detalleOrden->detalles_transaccion->amount, true);
-                    add_post_meta($order_id, '_card_number', $detalleOrden->detalles_transaccion->card_number, true);
-                    add_post_meta($order_id, '_shares_number', $detalleOrden->detalles_transaccion->shares_number, true);
-                    add_post_meta($order_id, '_accounting_date', $detalleOrden->detalles_transaccion->accounting_date, true);
-                    add_post_meta($order_id, '_transaction_date', $detalleOrden->detalles_transaccion->transaction_date, true);
-
-                    $order->payment_complete();
-                } else {
-                    Logger::log_me_wp("ERROR AL OBTENER EL DETALLE DE LA ORDEN");
-                    $order->update_status('failed');
-                }
-            } else {
-                Logger::log_me_wp("PEDIDO NO COMPLETADO");
-                $order->update_status('failed');
-            }
-        } else {
-            
-        }
-
-
-
+         
         /*
          * Redireccionamos.
          */
