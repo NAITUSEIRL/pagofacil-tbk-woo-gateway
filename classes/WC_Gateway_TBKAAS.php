@@ -509,6 +509,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
              * Si el mensaje está validado verifico que la orden sea haya completado.
              * Si se completó la marco como completa y agrego los meta datos
              */
+            $ct_estado = $response->ct_estado;
             Logger::log_me_wp("ESTADO DE LA ORDEN : $ct_estado");
 
             if ($ct_estado == "COMPLETADA") {
