@@ -502,6 +502,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         Logger::log_me_wp("Arreglo Firmado : ");
         Logger::log_me_wp($arregloFirmado);
+        Logger::log_me_wp("Accounting Date = ".$response->ct_accounting_date);
 
         if ($arregloFirmado["ct_firma"] == $ct_firma) {
             Logger::log_me_wp("Firmas Corresponden");
