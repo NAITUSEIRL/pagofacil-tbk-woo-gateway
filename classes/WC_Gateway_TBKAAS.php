@@ -310,7 +310,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
              * Revisamos si es callback
              */
 
-            $esCallback = isset($_POST["ct_estado"]);
+            $esCallback = isset($_GET["callback"]);
             if ($esCallback) {
                 $this->procesarCallback(INPUT_POST);
             } else {
