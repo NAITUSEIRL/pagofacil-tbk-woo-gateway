@@ -418,8 +418,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
     private function procesoCompletado($POST) {
 
 
-        $order_id = filter_input($POST, "order_id");
-        $order_id_mall = filter_input($POST, "order_id_mall");
+        $order_id = filter_input($POST, "ct_order_id");
+        $order_id_mall = filter_input($POST, "ct_order_id_mall");
 
 
 
@@ -430,70 +430,80 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         if (!($order)) {
             return;
         }
-        /*
-         * Agregamos el N DE OC MALL a la orden.
-         */
-        add_post_meta($order_id, '_order_id_mall', $order_id_mall, true);
-
-        Logger::log_me_wp("Order $order_id existente, continuamos");
-
 
         /*
-         * Revisamos si existe el parámetro DUPLICADA
+         * Si la orden se está procesando o está completa ya recibimos los datos con aterioridad.
          */
-        $duplicada = filter_input(INPUT_POST, "DUPLICADA");
+        if ($order->status === 'processing' || $order->status === 'completed') {
+            /*
+             * Agregamos el N DE OC MALL a la orden.
+             */
+            add_post_meta($order_id, '_order_id_mall', $order_id_mall, true);
 
-        if ($duplicada) {
-            //Si llegamos acá se intentó pagar una orden duplicada.
-            //Mostramos la página de rechazo.
-            Logger::log_me_wp("Se intentó el pago de una OC duplicada");
-            get_header();
-            include( plugin_dir_path(__FILE__) . '../templates/orden_fallida.php');
-            get_footer();
-            exit();
-        }
-
-        /*
-         * Si la orden no está pagada verificamos.
-         */
-        $verificado = $this->verificarOrden($order, $order_id);
-        /*
-         * Si la orden esta completa cambiamos estado
-         * Si no redireccionamos
-         */
-
-        if ($verificado) {
-            //Completamos la orden 
-            Logger::log_me_wp("PEDIDO COMPLETADO");
+            Logger::log_me_wp("Order $order_id existente, continuamos");
 
 
+            /*
+             * Revisamos si existe el parámetro DUPLICADA
+             */
+            $duplicada = filter_input(INPUT_POST, "DUPLICADA");
+
+            if ($duplicada) {
+                //Si llegamos acá se intentó pagar una orden duplicada.
+                //Mostramos la página de rechazo.
+                Logger::log_me_wp("Se intentó el pago de una OC duplicada");
+                get_header();
+                include( plugin_dir_path(__FILE__) . '../templates/orden_fallida.php');
+                get_footer();
+                exit();
+            }
+
+            /*
+             * Si la orden no está pagada verificamos.
+             */
+            $verificado = $this->verificarOrden($order, $order_id);
+            /*
+             * Si la orden esta completa cambiamos estado
+             * Si no redireccionamos
+             */
+
+            if ($verificado) {
+                //Completamos la orden 
+                Logger::log_me_wp("PEDIDO COMPLETADO");
 
 
-            //Agrego los datos extra
 
-            $detalleOrden = $this->getDetalleOrden($order, $order_id);
-            if ($detalleOrden) {
 
-                Logger::log_me_wp($detalleOrden);
+                //Agrego los datos extra
 
-                add_post_meta($order_id, '_order_id_mall', $order_id_mall, true);
-                add_post_meta($order_id, '_authorization_code', $detalleOrden->detalles_transaccion->authorization_code, true);
-                add_post_meta($order_id, '_payment_type_code', $detalleOrden->detalles_transaccion->payment_type_code, true);
-                add_post_meta($order_id, '_amount', $detalleOrden->detalles_transaccion->amount, true);
-                add_post_meta($order_id, '_card_number', $detalleOrden->detalles_transaccion->card_number, true);
-                add_post_meta($order_id, '_shares_number', $detalleOrden->detalles_transaccion->shares_number, true);
-                add_post_meta($order_id, '_accounting_date', $detalleOrden->detalles_transaccion->accounting_date, true);
-                add_post_meta($order_id, '_transaction_date', $detalleOrden->detalles_transaccion->transaction_date, true);
+                $detalleOrden = $this->getDetalleOrden($order, $order_id);
+                if ($detalleOrden) {
 
-                $order->payment_complete();
+                    Logger::log_me_wp($detalleOrden);
+
+                    add_post_meta($order_id, '_order_id_mall', $order_id_mall, true);
+                    add_post_meta($order_id, '_authorization_code', $detalleOrden->detalles_transaccion->authorization_code, true);
+                    add_post_meta($order_id, '_payment_type_code', $detalleOrden->detalles_transaccion->payment_type_code, true);
+                    add_post_meta($order_id, '_amount', $detalleOrden->detalles_transaccion->amount, true);
+                    add_post_meta($order_id, '_card_number', $detalleOrden->detalles_transaccion->card_number, true);
+                    add_post_meta($order_id, '_shares_number', $detalleOrden->detalles_transaccion->shares_number, true);
+                    add_post_meta($order_id, '_accounting_date', $detalleOrden->detalles_transaccion->accounting_date, true);
+                    add_post_meta($order_id, '_transaction_date', $detalleOrden->detalles_transaccion->transaction_date, true);
+
+                    $order->payment_complete();
+                } else {
+                    Logger::log_me_wp("ERROR AL OBTENER EL DETALLE DE LA ORDEN");
+                    $order->update_status('failed');
+                }
             } else {
-                Logger::log_me_wp("ERROR AL OBTENER EL DETALLE DE LA ORDEN");
+                Logger::log_me_wp("PEDIDO NO COMPLETADO");
                 $order->update_status('failed');
             }
         } else {
-            Logger::log_me_wp("PEDIDO NO COMPLETADO");
-            $order->update_status('failed');
+            
         }
+
+
 
         /*
          * Redireccionamos.
@@ -511,6 +521,10 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             return;
         }
 
+        //Si la orden está completada no hago nada.
+        if ($order->status === 'completed') {
+            return;
+        }
 
         $ct_order_id = $order_id;
         $ct_token_tienda = filter_input($POST, "ct_token_tienda");
@@ -519,27 +533,51 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $ct_estado = filter_input($POST, "ct_estado");
         $ct_authorization_code = filter_input($POST, "ct_authorization_code");
         $ct_payment_type_code = filter_input($POST, "ct_payment_type_code");
-        $card_number = filter_input($POST, "ct_card_number");
-        $card_expiration_date = filter_input($POST, "ct_card_expiration_date");
-        $shares_number = filter_input($POST, "ct_shares_number");
-        $accounting_date = filter_input($POST, "ct_accounting_date");
-        $transaction_date = filter_input($POST, "ct_transaction_date");
-
+        $ct_card_number = filter_input($POST, "ct_card_number");
+        $ct_card_expiration_date = filter_input($POST, "ct_card_expiration_date");
+        $ct_shares_number = filter_input($POST, "ct_shares_number");
+        $ct_accounting_date = filter_input($POST, "ct_accounting_date");
+        $ct_transaction_date = filter_input($POST, "ct_transaction_date");
+        $ct_order_id_mall = filter_input($POST, "ct_order_id_mall");
         $ct_firma = filter_input($POST, "ct_firma");
 
-        $response = new Response($ct_order_id, $ct_token_tienda, $ct_monto, $ct_token_service, $ct_estado, $ct_authorization_code, $ct_payment_type_code, $card_number, $card_expiration_date, $shares_number, $accounting_date, $transaction_date);
+        $response = new Response($ct_order_id, $ct_token_tienda, $ct_monto, $ct_token_service, $ct_estado, $ct_authorization_code, $ct_payment_type_code, $ct_card_number, $ct_card_expiration_date, $ct_shares_number, $ct_accounting_date, $ct_transaction_date, $ct_order_id_mall);
         $response->setCt_token_secret($this->token_secret);
 
         $arregloFirmado = $response->getArrayResponse();
 
         Logger::log_me_wp("Arreglo Firmado : ");
         Logger::log_me_wp($arregloFirmado);
-        
+
         if ($arregloFirmado["ct_firma"] == $ct_firma) {
             Logger::log_me_wp("Firmas Corresponden");
+            /*
+             * Si el mensaje está validado verifico que la orden sea haya completado.
+             * Si se completó la marco como completa y agrego los meta datos
+             */
+            Logger::log_me_wp("ESTADO DE LA ORDEN : $ct_estado");
+
+            if ($ct_estado == "COMPLETADA") {
+                //Marcar Completa
+                $order->payment_complete();
+                //Agregar Meta
+                $this->addMetaFromResponse($response, $order_id);
+                Logger::log_me_wp("Orden $order_id marcada completa");
+            }
         } else {
             Logger::log_me_wp("Firmas NO Corresponden");
         }
+    }
+
+    private function addMetaFromResponse(Response $response, $order_id) {
+        add_post_meta($order_id, '_order_id_mall', $response->ct_order_id_mall, true);
+        add_post_meta($order_id, '_authorization_code', $response->ct_authorization_code, true);
+        add_post_meta($order_id, '_payment_type_code', $response->ct_payment_type_code, true);
+        add_post_meta($order_id, '_amount', $response->ct_monto, true);
+        add_post_meta($order_id, '_card_number', $response->ct_card_number, true);
+        add_post_meta($order_id, '_shares_number', $response->ct_shares_number, true);
+        add_post_meta($order_id, '_accounting_date', $response->ct_accounting_date, true);
+        add_post_meta($order_id, '_transaction_date', $response->ct_transaction_date, true);
     }
 
 }
