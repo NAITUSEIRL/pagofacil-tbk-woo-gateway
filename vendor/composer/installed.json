@@ -51,20 +51,20 @@
     },
     {
         "name": "ctala/transaccion-default",
-        "version": "dev-devel",
-        "version_normalized": "dev-devel",
+        "version": "V0.1.0",
+        "version_normalized": "0.1.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/NAITUSEIRL/transaccion-default.git",
-            "reference": "59d88ee747b97d86d3ca13f5443512c5ffc400f5"
+            "reference": "50b14620730ea70b12a68d21b1dc4c036430b431"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/NAITUSEIRL/transaccion-default/zipball/59d88ee747b97d86d3ca13f5443512c5ffc400f5",
-            "reference": "59d88ee747b97d86d3ca13f5443512c5ffc400f5",
+            "url": "https://api.github.com/repos/NAITUSEIRL/transaccion-default/zipball/50b14620730ea70b12a68d21b1dc4c036430b431",
+            "reference": "50b14620730ea70b12a68d21b1dc4c036430b431",
             "shasum": ""
         },
-        "time": "2016-08-23 18:50:38",
+        "time": "2016-08-24 13:54:37",
         "type": "library",
         "installation-source": "source",
         "autoload": {

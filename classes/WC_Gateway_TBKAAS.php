@@ -29,6 +29,7 @@ namespace tbkaaswoogateway\classes;
 use tbkaaswoogateway\classes\Logger;
 use WC_Order;
 use ctala\transaccion\classes\Transaccion;
+use ctala\transaccion\classes\Response;
 
 /**
  * Description of WC_Gateway_TBKAAS
@@ -62,7 +63,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         } else {
             $this->tbkaas_base_url = SERVER_PRODUCCION;
         }
-        
+
         $this->token_service = $this->get_option('token_service');
         $this->token_secret = $this->get_option('token_secret');
 
@@ -222,7 +223,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $transaccion->setCt_token_secret($this->token_secret);
 
         $pago_args = $transaccion->getArrayResponse();
-        
+
 //        $pago_args = array(
 //        'monto' =>,
 //        'order_id' => $order_id,
@@ -310,7 +311,17 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
          * Si llegamos por post verificamos, si no redireccionamos a error.
          */
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->procesoCompletado(INPUT_POST);
+
+            /*
+             * Revisamos si es callback
+             */
+
+            $esCallback = isset($_POST["callback"]);
+            if ($esCallback) {
+                $this->procesarCallback(INPUT_POST);
+            } else {
+                $this->procesoCompletado(INPUT_POST);
+            }
         } else {
             die("NO PERMITIDO");
         }
@@ -490,6 +501,45 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $order_received = $order->get_checkout_order_received_url();
         wp_redirect($order_received);
         exit;
+    }
+
+    private function procesarCallback($POST) {
+        $order_id = filter_input($POST, "order_id");
+        //Verificamos que la orden exista 
+        $order = new WC_Order($order_id);
+        if (!($order)) {
+            return;
+        }
+
+
+        $ct_order_id = $order_id;
+        $ct_token_tienda = filter_input($POST, "ct_token_tienda");
+        $ct_monto = filter_input($POST, "ct_monto");
+        $ct_token_service = filter_input($POST, "ct_token_service");
+        $ct_estado = filter_input($POST, "ct_estado");
+        $ct_authorization_code = filter_input($POST, "ct_authorization_code");
+        $ct_payment_type_code = filter_input($POST, "ct_payment_type_code");
+        $card_number = filter_input($POST, "ct_card_number");
+        $card_expiration_date = filter_input($POST, "ct_card_expiration_date");
+        $shares_number = filter_input($POST, "ct_shares_number");
+        $accounting_date = filter_input($POST, "ct_accounting_date");
+        $transaction_date = filter_input($POST, "ct_transaction_date");
+
+        $ct_firma = filter_input($POST, "ct_firma");
+
+        $response = new Response($ct_order_id, $ct_token_tienda, $ct_monto, $ct_token_service, $ct_estado, $ct_authorization_code, $ct_payment_type_code, $card_number, $card_expiration_date, $shares_number, $accounting_date, $transaction_date);
+        $response->setCt_token_secret($this->token_secret);
+
+        $arregloFirmado = $response->getArrayResponse();
+
+        Logger::log_me_wp("Arreglo Firmado : ");
+        Logger::log_me_wp($arregloFirmado);
+        
+        if ($arregloFirmado["ct_firma"] == $ct_firma) {
+            Logger::log_me_wp("Firmas Corresponden");
+        } else {
+            Logger::log_me_wp("Firmas NO Corresponden");
+        }
     }
 
 }

@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a193b92983cc08ad13bb0fa890db04eb",
-    "content-hash": "d5d0f345338e45b570e6045c1302efd1",
+    "hash": "f7f3a88c720481e7988db7f0d984499c",
+    "content-hash": "28406d461c429911a66e78de63632a78",
     "packages": [
         {
             "name": "ctala/transaccion-default",
-            "version": "dev-devel",
+            "version": "V0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NAITUSEIRL/transaccion-default.git",
-                "reference": "59d88ee747b97d86d3ca13f5443512c5ffc400f5"
+                "reference": "50b14620730ea70b12a68d21b1dc4c036430b431"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NAITUSEIRL/transaccion-default/zipball/59d88ee747b97d86d3ca13f5443512c5ffc400f5",
-                "reference": "59d88ee747b97d86d3ca13f5443512c5ffc400f5",
+                "url": "https://api.github.com/repos/NAITUSEIRL/transaccion-default/zipball/50b14620730ea70b12a68d21b1dc4c036430b431",
+                "reference": "50b14620730ea70b12a68d21b1dc4c036430b431",
                 "shasum": ""
             },
             "type": "library",
@@ -42,7 +42,7 @@
                 " libreria",
                 "extension"
             ],
-            "time": "2016-08-23 18:50:38"
+            "time": "2016-08-24 13:54:37"
         },
         {
             "name": "paragonie/random_compat",
@@ -96,9 +96,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "ctala/transaccion-default": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
