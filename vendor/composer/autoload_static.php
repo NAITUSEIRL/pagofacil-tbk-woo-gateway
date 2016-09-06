@@ -6,10 +6,6 @@ namespace Composer\Autoload;
 
 class ComposerStaticInitaee3e83e4240f0dd14ce6d78ed2fb6cc
 {
-    public static $files = array (
-        '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
-    );
-
     public static $prefixLengthsPsr4 = array (
         't' => 
         array (
