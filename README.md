@@ -4,7 +4,7 @@ Este plugin permite la conexión entre la tu eCommerce, la pasarela de pagos y T
 
 # Como usar : 
 * Descarga la versión Master del repositorio.
-* Registrate y crea tus credenciales en https://panel.cristiantala.cl/. Debes de tener un código de comercio PST para que esto funcione.
+* Registrate y crea tus credenciales en https://www.pagofacil.org/. Debes de tener un código de comercio PST para que esto funcione.
 * Sube tu plugin a Wordpress. Obviamente necesitas Woocommerce andando.
 * Para configruarlo : Woocommerce / Settings / Checkout / WebpayPlus PST para Woocommerce
 * Aquí ingresas las credenciales que creaste anteriormente en el dashboard.
@@ -13,6 +13,6 @@ Este plugin permite la conexión entre la tu eCommerce, la pasarela de pagos y T
 
 * En caso de problemas reportarlos a través de los ISSUES de GITHUB.
 * Puedes ademas preguntar en el foro de desarrollo : https://devel.cl/c/as-a-service-labs/woocommerce-and-webpayplus-pst
-* 
+
 
 
