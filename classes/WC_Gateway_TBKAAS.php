@@ -219,7 +219,10 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
 
         $monto = round($order->order_total);
-        $transaccion = new Transaccion($order_id, $token_tienda, $monto, $this->token_service);
+        
+        //_billing_email
+        $email = $order->billing_email;
+        $transaccion = new Transaccion($order_id, $token_tienda, $monto, $this->token_service,$email);
         $transaccion->setCt_token_secret($this->token_secret);
 
         $pago_args = $transaccion->getArrayResponse();
