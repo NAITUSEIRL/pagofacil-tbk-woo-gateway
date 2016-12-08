@@ -67,14 +67,6 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $this->token_service = $this->get_option('token_service');
         $this->token_secret = $this->get_option('token_secret');
 
-//        $this->method_description = '<ul>'
-//                . '<li>URL CALLBACK : ' . $this->notify_url . '</b></i></li>'
-//                . '<li>URL FINAL : ' . $this->notify_url . '</b></i></li>'
-//                . '</ul>';
-
-
-
-
         add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 
