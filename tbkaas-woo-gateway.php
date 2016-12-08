@@ -1,10 +1,10 @@
 <?php
 
 /*
-  Plugin Name: tbkaas-woo-gateway
-  Plugin URI:  https://github.com/ctala/tbkaas-woo-gateway
-  Description: Pasarela de Pagos para Woocommerce y Transbank usando WebPayPlus Webservices a través de TBKAAS
-  Version:     0.1-PROD
+  Plugin Name: PagoFácil.org - WebpayPlus
+  Plugin URI:  http://www.pagofacil.org
+  Description: Pasarela de Pagos para Woocommerce y Transbank usando WebPayPlus Webservices a través de PagoFacil.org
+  Version:     0.2-DEV
   Author:      Cristian Tala Sánchez
   Author URI:  http://www.cristiantala.cl
   License:     MIT

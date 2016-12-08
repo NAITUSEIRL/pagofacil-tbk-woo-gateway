@@ -1,0 +1,20 @@
+{
+    "name": "ctala/transaccion-default",
+    "description": "Libreria base para generar transacciones con TBKAAS",
+    "type": "library",
+    "keywords": ["extension"," libreria"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cristian Tala Sanchez",
+            "email": "yomismo@cristiantala.cl"
+        }
+    ],
+    "require": {
+            },
+    "autoload": {
+        "psr-4": {
+            "ctala\\transaccion\\": ""
+        }
+    }
+}

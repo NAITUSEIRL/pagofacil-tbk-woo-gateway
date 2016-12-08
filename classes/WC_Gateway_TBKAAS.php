@@ -47,7 +47,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $this->id = 'tbkaas';
         $this->icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(__FILE__)) . '/../assets/images/logo.png';
         $this->has_fields = false;
-        $this->method_title = 'Transbank As A Service';
+        $this->method_title = 'PagoFácil.org - WebpayPlus';
         $this->notify_url = WC()->api_request_url('WC_Gateway_TBKAAS');
 
         // Load the settings.
@@ -67,10 +67,10 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $this->token_service = $this->get_option('token_service');
         $this->token_secret = $this->get_option('token_secret');
 
-        $this->method_description = '<ul>'
-                . '<li>URL CALLBACK : ' . $this->notify_url . '</b></i></li>'
-                . '<li>URL FINAL : ' . $this->notify_url . '</b></i></li>'
-                . '</ul>';
+//        $this->method_description = '<ul>'
+//                . '<li>URL CALLBACK : ' . $this->notify_url . '</b></i></li>'
+//                . '<li>URL FINAL : ' . $this->notify_url . '</b></i></li>'
+//                . '</ul>';
 
 
 
@@ -89,7 +89,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             'enabled' => array(
                 'title' => __('Enable/Disable', 'woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Habilita Transbank As A Service', 'woocommerce'),
+                'label' => __('Habilita PagoFácil - WebpayPlus', 'woocommerce'),
                 'default' => 'yes'
             ),
             'desarrollo' => array(
@@ -102,18 +102,18 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                 'title' => __('Title', 'woocommerce'),
                 'type' => 'text',
                 'description' => __('', 'woocommerce'),
-                'default' => __('WebpayPlust PST', 'woocommerce')
+                'default' => __('WebpayPlust', 'woocommerce')
             ),
             'description' => array(
                 'title' => __('Customer Message', 'woocommerce'),
                 'type' => 'textarea',
                 'description' => __('Mensaje que recibirán los clientes al seleccionar el medio de pago'),
-                'default' => __('Sistema de pago con tarjetas de crédito y debito chilenas.'),
+                'default' => __('Sistema de pago con tarjetas de crédito y débito chilenas.'),
             ),
             'token_service' => array(
                 'title' => "Token Servicio",
                 'type' => 'text',
-                'description' => "El token asignado al servicio creado.",
+                'description' => "El token asignado al servicio creado en PagoFacil.org.",
                 'default' => "",
             ),
             'token_secret' => array(

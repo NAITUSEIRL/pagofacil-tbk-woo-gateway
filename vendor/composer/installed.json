@@ -1,0 +1,91 @@
+[
+    {
+        "name": "paragonie/random_compat",
+        "version": "v2.0.4",
+        "version_normalized": "2.0.4.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/paragonie/random_compat.git",
+            "reference": "a9b97968bcde1c4de2a5ec6cbd06a0f6c919b46e"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/paragonie/random_compat/zipball/a9b97968bcde1c4de2a5ec6cbd06a0f6c919b46e",
+            "reference": "a9b97968bcde1c4de2a5ec6cbd06a0f6c919b46e",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.2.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "4.*|5.*"
+        },
+        "suggest": {
+            "ext-libsodium": "Provides a modern crypto API that can be used to generate random bytes."
+        },
+        "time": "2016-11-07 23:38:38",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "lib/random.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Paragon Initiative Enterprises",
+                "email": "security@paragonie.com",
+                "homepage": "https://paragonie.com"
+            }
+        ],
+        "description": "PHP 5.x polyfill for random_bytes() and random_int() from PHP 7",
+        "keywords": [
+            "csprng",
+            "pseudorandom",
+            "random"
+        ]
+    },
+    {
+        "name": "ctala/transaccion-default",
+        "version": "V0.1.12.3",
+        "version_normalized": "0.1.12.3",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/NAITUSEIRL/PagoFacil.org-PHP-SDK.git",
+            "reference": "d7031130ddd4960c36cfa09d4874888a09686c5e"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/NAITUSEIRL/PagoFacil.org-PHP-SDK/zipball/d7031130ddd4960c36cfa09d4874888a09686c5e",
+            "reference": "d7031130ddd4960c36cfa09d4874888a09686c5e",
+            "shasum": ""
+        },
+        "time": "2016-12-07 12:57:39",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "ctala\\transaccion\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Cristian Tala Sanchez",
+                "email": "yomismo@cristiantala.cl"
+            }
+        ],
+        "description": "Libreria base para generar transacciones con TBKAAS",
+        "keywords": [
+            " libreria",
+            "extension"
+        ]
+    }
+]
