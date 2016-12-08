@@ -56,7 +56,7 @@ function custom_meta_box_markup() {
 }
 
 function add_custom_meta_box() {
-    add_meta_box("pagofacil-meta-box", "PagoFácil Meta Data", "custom_meta_box_markup", "shop_order", "side", "high", null);
+    add_meta_box("pagofacil-meta-box", "PagoFácil Meta Data", "tbkaaswoogateway\custom_meta_box_markup", "shop_order", "side", "high", null);
 }
 
 add_action("add_meta_boxes", "tbkaaswoogateway\add_custom_meta_box");
