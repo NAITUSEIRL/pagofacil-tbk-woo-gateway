@@ -1,5 +1,7 @@
 <?php
 
+namespace tbkaaswoogateway;
+
 /*
   Plugin Name: PagoFácil.org - WebpayPlus
   Plugin URI:  http://www.pagofacil.org
@@ -32,23 +34,30 @@ define("SERVER_TBKAAS_DETALLE", "getOrden");
 //Funciones
 add_action('plugins_loaded', 'init_TBKAAS');
 
-function init_TBKAAS()
-{
+function init_TBKAAS() {
     if (!class_exists('WC_Payment_Gateway'))
         return;
 
-    class WC_Gateway_TBKAAS_Chile extends WC_Gateway_TBKAAS
-    {
+    class WC_Gateway_TBKAAS_Chile extends WC_Gateway_TBKAAS {
         
     }
 
 }
 
-function add_your_gateway_class($methods)
-{
+function add_your_gateway_class($methods) {
     $methods[] = 'WC_Gateway_TBKAAS_Chile';
     return $methods;
 }
 
-add_filter('woocommerce_payment_gateways', 'add_your_gateway_class');
+add_filter('woocommerce_payment_gateways', '\add_your_gateway_class');
+
+function custom_meta_box_markup() {
+    
+}
+
+function add_custom_meta_box() {
+    add_meta_box("demo-meta-box", "Custom Meta Box", "custom_meta_box_markup", "post", "side", "high", null);
+}
+
+add_action("add_meta_boxes", "add_custom_meta_box");
 ?>
