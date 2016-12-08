@@ -49,7 +49,7 @@ function add_your_gateway_class($methods) {
     return $methods;
 }
 
-add_filter('woocommerce_payment_gateways', '\add_your_gateway_class');
+add_filter('woocommerce_payment_gateways', 'tbkaaswoogateway\add_your_gateway_class');
 
 function custom_meta_box_markup() {
     
