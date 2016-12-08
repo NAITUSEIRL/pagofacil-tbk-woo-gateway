@@ -32,7 +32,7 @@ define("SERVER_TBKAAS_DETALLE", "getOrden");
 
 //VARIABLES
 //Funciones
-add_action('plugins_loaded', 'init_TBKAAS');
+add_action('plugins_loaded', 'tbkaaswoogateway\init_TBKAAS');
 
 function init_TBKAAS() {
     if (!class_exists('WC_Payment_Gateway'))
@@ -59,5 +59,5 @@ function add_custom_meta_box() {
     add_meta_box("demo-meta-box", "Custom Meta Box", "custom_meta_box_markup", "post", "side", "high", null);
 }
 
-add_action("add_meta_boxes", "add_custom_meta_box");
+add_action("add_meta_boxes", "tbkaaswoogateway\add_custom_meta_box");
 ?>
