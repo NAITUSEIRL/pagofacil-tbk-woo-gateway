@@ -45,7 +45,7 @@ function init_TBKAAS() {
 }
 
 function add_your_gateway_class($methods) {
-    $methods[] = 'WC_Gateway_TBKAAS_Chile';
+    $methods[] = 'tbkaaswoogateway\WC_Gateway_TBKAAS_Chile';
     return $methods;
 }
 
