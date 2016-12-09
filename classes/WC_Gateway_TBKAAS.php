@@ -328,81 +328,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
     }
 
-    private function getDetalleOrden($order, $order_id) {
-
-        $token_tienda_db = get_post_meta($order_id, "_token_tienda", true);
-        Logger::log_me_wp("TOKEN TIENDA en DB : $token_tienda_db");
-
-        //Si existe le preguntamos al servidor su estado
-        $fields = array(
-            'codigo_comercio' => $this->get_option("codigo_comercio"),
-            'token_service' => $this->get_option("token_service"),
-            'order_id' => $order_id,
-            'token_tienda' => $token_tienda_db,
-        );
-
-        $resultado = $this->executeCurl($fields, $this->tbkaas_base_url . SERVER_TBKAAS_DETALLE);
-
-        Logger::log_me_wp("RESULTADO :" . print_r($resultado, true));
-
-        if (is_null($resultado)) {
-            return NULL;
-        } else {
-
-            return $resultado;
-        }
-    }
-
-    private function verificarOrden($order, $order_id) {
-
-        $token_tienda_db = get_post_meta($order_id, "_token_tienda", true);
-        Logger::log_me_wp("TOKEN TIENDA en DB : $token_tienda_db");
-
-        //Si existe le preguntamos al servidor su estado
-        $fields = array(
-            'codigo_comercio' => $this->get_option("codigo_comercio"),
-            'token_service' => $this->get_option("token_service"),
-            'order_id' => $order_id,
-            'monto' => round($order->order_total),
-            'token_tienda' => $token_tienda_db,
-        );
-
-        $resultado = $this->executeCurl($fields, $this->tbkaas_base_url . SERVER_TBKAAS_VERIFICAR);
-
-        Logger::log_me_wp("RESULTADO :" . print_r($resultado, true));
-
-        if (is_null($resultado)) {
-            return FALSE;
-        } else {
-            if ($resultado->ESTADO == "COMPLETADA") {
-                Logger::log_me_wp("COMPLETADA");
-                return true;
-            } else {
-                Logger::log_me_wp("NO COMPLETADA");
-                return false;
-            }
-        }
-    }
-
-    private function executeCurl($fields, $url) {
-
-        $ch = \curl_init($url);
-
-        \curl_setopt($ch, CURLOPT_URL, $url);
-        \curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-        \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        $result = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
-        Logger::log_me_wp("Resultado Verificacion : " . $result);
-
-        if ($info["http_code"] == 200) {
-            return json_decode($result);
-        } else {
-            return NULL;
-        }
-    }
+   
 
     private function procesoCompletado($POST) {
         Logger::log_me_wp("Iniciando el proceso completado ");
@@ -422,9 +348,11 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
 
         $order_id = filter_input($POST, "ct_order_id");
+        $order_id_mall = filter_input($POST, "ct_order_id_mall");
 
 
         Logger::log_me_wp("ORDER _id = $order_id");
+        Logger::log_me_wp("ORDER _id = $order_id_mall");
 
         //Verificamos que la orden exista 
         $order = new WC_Order($order_id);
