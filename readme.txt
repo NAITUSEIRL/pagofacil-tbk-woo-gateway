@@ -8,7 +8,7 @@ Stable tag: V1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This plugin allows the connection between the Chilean payment gateway through As a Service Labs.
+This plugin allows the connection between the Chilean payment gateway through PagoFacil.org.
 
 == Description ==
 
