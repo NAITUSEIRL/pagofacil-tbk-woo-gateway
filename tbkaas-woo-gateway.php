@@ -51,8 +51,8 @@ function add_your_gateway_class($methods) {
 
 add_filter('woocommerce_payment_gateways', 'tbkaaswoogateway\add_your_gateway_class');
 
-function custom_meta_box_markup($post_id) {
-    echo $post_id;
+function custom_meta_box_markup($post) {
+    echo $post->ID;
 }
 
 function add_custom_meta_box() {
