@@ -52,7 +52,14 @@ function add_your_gateway_class($methods) {
 add_filter('woocommerce_payment_gateways', 'tbkaaswoogateway\add_your_gateway_class');
 
 function custom_meta_box_markup($post) {
-    echo $post->ID;
+    $order_id = $post->ID;
+    $codigoAuth = get_post_meta($order_id, "_authorization_code", true);
+    if($codigoAuth!="")
+    {
+        include( plugin_dir_path(__FILE__) . '/templates/order_recibida.php');
+    }
+     
+ 
 }
 
 function add_custom_meta_box() {
