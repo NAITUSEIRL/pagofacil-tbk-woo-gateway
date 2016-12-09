@@ -353,6 +353,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         Logger::log_me_wp("ORDER _id = $order_id");
         Logger::log_me_wp("ORDER _id = $order_id_mall");
+        
+        Logger::log_me_wp($_POST);
 
         //Verificamos que la orden exista 
         $order = new WC_Order($order_id);
@@ -360,6 +362,9 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             return;
         }
 
+        //Revisamos si ya está completada, si lo está no acemos nada.
+        
+        //Si no aparece completada y el resultado es COMPLETADA cambiamos el estado y agregamos datos.
          
         /*
          * Redireccionamos.
