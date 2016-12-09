@@ -394,7 +394,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
 
         
-        $response = $this->getResponseFromPost($POST,$order_idr);
+        $response = $this->getResponseFromPost($POST,$order_id);
         $ct_firma = filter_input($POST, "ct_firma");
         $ct_estado = filter_input($POST, "ct_estado");
 
