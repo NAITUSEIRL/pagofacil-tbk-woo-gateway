@@ -58,6 +58,12 @@ function custom_meta_box_markup($post) {
     {
         include( plugin_dir_path(__FILE__) . '/templates/order_recibida.php');
     }
+    else
+    {
+        echo "<p>";
+        echo "No exste información relacionada al pedido.";
+        echo "</p>";
+    }
      
  
 }
