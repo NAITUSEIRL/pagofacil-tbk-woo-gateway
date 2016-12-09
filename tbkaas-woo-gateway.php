@@ -61,7 +61,7 @@ function custom_meta_box_markup($post) {
     else
     {
         echo "<p>";
-        echo "No exste información relacionada al pedido.";
+        echo "No existe información relacionada al pedido.";
         echo "</p>";
     }
      
