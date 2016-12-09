@@ -211,10 +211,10 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
 
         $monto = round($order->order_total);
-        
+
         //_billing_email
         $email = $order->billing_email;
-        $transaccion = new Transaccion($order_id, $token_tienda, $monto, $this->token_service,$email);
+        $transaccion = new Transaccion($order_id, $token_tienda, $monto, $this->token_service, $email);
         $transaccion->setCt_token_secret($this->token_secret);
 
         $pago_args = $transaccion->getArrayResponse();
@@ -264,20 +264,20 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
          * La variable resultado tiene el formulario que es enviado a transbank. ( Todo el <FORM> )
          */
         $resultado = '<form action="' . esc_url($formPostAddress) . '" method="post" id="tbkaas_payment_form" target="_top">';
-        $resultado.=implode('', $webpayplus_args_array);
-        $resultado.='<!-- Button Fallback -->
+        $resultado .= implode('', $webpayplus_args_array);
+        $resultado .= '<!-- Button Fallback -->
                         <div class="payment_buttons">
                         <input type="submit" class="button alt" id="submit_tbkaas_payment_form" value="' . __('Pago via WebpayPlus') . '" /> <a class="button cancel" href="' . esc_url($order->get_cancel_order_url()) . '">' . __('Cancel order &amp; restore cart', 'woocommerce') . '</a>
                         </div>';
         if ($AUTOREDIRECT === "yes") {
 
-            $resultado.='
+            $resultado .= '
                                 <script type="text/javascript">
 					jQuery(".payment_buttons").hide();
 				</script>';
-            $resultado.='</form>';
+            $resultado .= '</form>';
         } else {
-            $resultado.='</form>';
+            $resultado .= '</form>';
             wc_enqueue_js(
                     "$('#submit_tbkaas_payment_form').click(function(){
                        $('#submit_tbkaas_payment_form').attr('disabled', true);	
@@ -328,8 +328,6 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
     }
 
-   
-
     private function procesoCompletado($POST) {
         Logger::log_me_wp("Iniciando el proceso completado ");
         /*
@@ -349,11 +347,13 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         $order_id = filter_input($POST, "ct_order_id");
         $order_id_mall = filter_input($POST, "ct_order_id_mall");
+        $order_estado = filter_input($POST, "ct_estado");
 
 
         Logger::log_me_wp("ORDER _id = $order_id");
-        Logger::log_me_wp("ORDER _id = $order_id_mall");
-        
+        Logger::log_me_wp("ORDER _id_mall = $order_id_mall");
+        Logger::log_me_wp("ORDER _estado = $order_estado");
+
         Logger::log_me_wp($_POST);
 
         //Verificamos que la orden exista 
@@ -362,10 +362,16 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             return;
         }
 
+
+
         //Revisamos si ya está completada, si lo está no acemos nada.
-        
+
+        if ($order->status != "completed") {
+            $this->procesarCallback($POST);
+        }
+
         //Si no aparece completada y el resultado es COMPLETADA cambiamos el estado y agregamos datos.
-         
+
         /*
          * Redireccionamos.
          */
@@ -387,22 +393,12 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             return;
         }
 
-        $ct_order_id = $order_id;
-        $ct_token_tienda = filter_input($POST, "ct_token_tienda");
-        $ct_monto = filter_input($POST, "ct_monto");
-        $ct_token_service = filter_input($POST, "ct_token_service");
-        $ct_estado = filter_input($POST, "ct_estado");
-        $ct_authorization_code = filter_input($POST, "ct_authorization_code");
-        $ct_payment_type_code = filter_input($POST, "ct_payment_type_code");
-        $ct_card_number = filter_input($POST, "ct_card_number");
-        $ct_card_expiration_date = filter_input($POST, "ct_card_expiration_date");
-        $ct_shares_number = filter_input($POST, "ct_shares_number");
-        $ct_accounting_date = filter_input($POST, "ct_accounting_date");
-        $ct_transaction_date = filter_input($POST, "ct_transaction_date");
-        $ct_order_id_mall = filter_input($POST, "ct_order_id_mall");
+        
+        $response = $this->getResponseFromPost($POST);
         $ct_firma = filter_input($POST, "ct_firma");
+        $ct_estado = filter_input($POST, "ct_estado");
 
-        $response = new Response($ct_order_id, $ct_token_tienda, $ct_monto, $ct_token_service, $ct_estado, $ct_authorization_code, $ct_payment_type_code, $ct_card_number, $ct_card_expiration_date, $ct_shares_number, $ct_accounting_date, $ct_transaction_date, $ct_order_id_mall);
+
         $response->setCt_token_secret($this->token_secret);
 
         $arregloFirmado = $response->getArrayResponse();
@@ -425,6 +421,12 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                 $this->addMetaFromResponse($response, $order_id);
                 Logger::log_me_wp("Orden $order_id marcada completa");
             }
+            else
+            {
+                $order->update_status('failed', "El pago del pedido no fue exitoso.");
+                add_post_meta($order_id, '_order_id_mall', $response->ct_order_id_mall, true);
+
+            }
         } else {
             Logger::log_me_wp("Firmas NO Corresponden");
         }
@@ -439,6 +441,26 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         add_post_meta($order_id, '_shares_number', $response->ct_shares_number, true);
         add_post_meta($order_id, '_accounting_date', $response->ct_accounting_date, true);
         add_post_meta($order_id, '_transaction_date', $response->ct_transaction_date, true);
+    }
+
+    private function getResponseFromPost($POST) {
+        $ct_order_id = $order_id;
+        $ct_token_tienda = filter_input($POST, "ct_token_tienda");
+        $ct_monto = filter_input($POST, "ct_monto");
+        $ct_token_service = filter_input($POST, "ct_token_service");
+        $ct_estado = filter_input($POST, "ct_estado");
+        $ct_authorization_code = filter_input($POST, "ct_authorization_code");
+        $ct_payment_type_code = filter_input($POST, "ct_payment_type_code");
+        $ct_card_number = filter_input($POST, "ct_card_number");
+        $ct_card_expiration_date = filter_input($POST, "ct_card_expiration_date");
+        $ct_shares_number = filter_input($POST, "ct_shares_number");
+        $ct_accounting_date = filter_input($POST, "ct_accounting_date");
+        $ct_transaction_date = filter_input($POST, "ct_transaction_date");
+        $ct_order_id_mall = filter_input($POST, "ct_order_id_mall");
+        
+
+        $response = new Response($ct_order_id, $ct_token_tienda, $ct_monto, $ct_token_service, $ct_estado, $ct_authorization_code, $ct_payment_type_code, $ct_card_number, $ct_card_expiration_date, $ct_shares_number, $ct_accounting_date, $ct_transaction_date, $ct_order_id_mall);
+        return $response;
     }
 
 }
