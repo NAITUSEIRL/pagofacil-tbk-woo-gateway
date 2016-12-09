@@ -47,7 +47,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $this->id = 'tbkaas';
         $this->icon = WP_PLUGIN_URL . "/" . plugin_basename(dirname(__FILE__)) . '/../assets/images/logo.png';
         $this->has_fields = false;
-        $this->method_title = 'Transbank As A Service';
+        $this->method_title = 'PagoFácil.org - WebpayPlus';
         $this->notify_url = WC()->api_request_url('WC_Gateway_TBKAAS');
 
         // Load the settings.
@@ -67,14 +67,6 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $this->token_service = $this->get_option('token_service');
         $this->token_secret = $this->get_option('token_secret');
 
-        $this->method_description = '<ul>'
-                . '<li>URL CALLBACK : ' . $this->notify_url . '</b></i></li>'
-                . '<li>URL FINAL : ' . $this->notify_url . '</b></i></li>'
-                . '</ul>';
-
-
-
-
         add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 
@@ -89,7 +81,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             'enabled' => array(
                 'title' => __('Enable/Disable', 'woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Habilita Transbank As A Service', 'woocommerce'),
+                'label' => __('Habilita PagoFácil - WebpayPlus', 'woocommerce'),
                 'default' => 'yes'
             ),
             'desarrollo' => array(
@@ -102,18 +94,18 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                 'title' => __('Title', 'woocommerce'),
                 'type' => 'text',
                 'description' => __('', 'woocommerce'),
-                'default' => __('WebpayPlust PST', 'woocommerce')
+                'default' => __('WebpayPlust', 'woocommerce')
             ),
             'description' => array(
                 'title' => __('Customer Message', 'woocommerce'),
                 'type' => 'textarea',
                 'description' => __('Mensaje que recibirán los clientes al seleccionar el medio de pago'),
-                'default' => __('Sistema de pago con tarjetas de crédito y debito chilenas.'),
+                'default' => __('Sistema de pago con tarjetas de crédito y débito chilenas.'),
             ),
             'token_service' => array(
                 'title' => "Token Servicio",
                 'type' => 'text',
-                'description' => "El token asignado al servicio creado.",
+                'description' => "El token asignado al servicio creado en PagoFacil.org.",
                 'default' => "",
             ),
             'token_secret' => array(
@@ -219,7 +211,10 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
 
         $monto = round($order->order_total);
-        $transaccion = new Transaccion($order_id, $token_tienda, $monto, $this->token_service);
+
+        //_billing_email
+        $email = $order->billing_email;
+        $transaccion = new Transaccion($order_id, $token_tienda, $monto, $this->token_service, $email);
         $transaccion->setCt_token_secret($this->token_secret);
 
         $pago_args = $transaccion->getArrayResponse();
@@ -269,20 +264,20 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
          * La variable resultado tiene el formulario que es enviado a transbank. ( Todo el <FORM> )
          */
         $resultado = '<form action="' . esc_url($formPostAddress) . '" method="post" id="tbkaas_payment_form" target="_top">';
-        $resultado.=implode('', $webpayplus_args_array);
-        $resultado.='<!-- Button Fallback -->
+        $resultado .= implode('', $webpayplus_args_array);
+        $resultado .= '<!-- Button Fallback -->
                         <div class="payment_buttons">
                         <input type="submit" class="button alt" id="submit_tbkaas_payment_form" value="' . __('Pago via WebpayPlus') . '" /> <a class="button cancel" href="' . esc_url($order->get_cancel_order_url()) . '">' . __('Cancel order &amp; restore cart', 'woocommerce') . '</a>
                         </div>';
         if ($AUTOREDIRECT === "yes") {
 
-            $resultado.='
+            $resultado .= '
                                 <script type="text/javascript">
 					jQuery(".payment_buttons").hide();
 				</script>';
-            $resultado.='</form>';
+            $resultado .= '</form>';
         } else {
-            $resultado.='</form>';
+            $resultado .= '</form>';
             wc_enqueue_js(
                     "$('#submit_tbkaas_payment_form').click(function(){
                        $('#submit_tbkaas_payment_form').attr('disabled', true);	
@@ -333,82 +328,6 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
     }
 
-    private function getDetalleOrden($order, $order_id) {
-
-        $token_tienda_db = get_post_meta($order_id, "_token_tienda", true);
-        Logger::log_me_wp("TOKEN TIENDA en DB : $token_tienda_db");
-
-        //Si existe le preguntamos al servidor su estado
-        $fields = array(
-            'codigo_comercio' => $this->get_option("codigo_comercio"),
-            'token_service' => $this->get_option("token_service"),
-            'order_id' => $order_id,
-            'token_tienda' => $token_tienda_db,
-        );
-
-        $resultado = $this->executeCurl($fields, $this->tbkaas_base_url . SERVER_TBKAAS_DETALLE);
-
-        Logger::log_me_wp("RESULTADO :" . print_r($resultado, true));
-
-        if (is_null($resultado)) {
-            return NULL;
-        } else {
-
-            return $resultado;
-        }
-    }
-
-    private function verificarOrden($order, $order_id) {
-
-        $token_tienda_db = get_post_meta($order_id, "_token_tienda", true);
-        Logger::log_me_wp("TOKEN TIENDA en DB : $token_tienda_db");
-
-        //Si existe le preguntamos al servidor su estado
-        $fields = array(
-            'codigo_comercio' => $this->get_option("codigo_comercio"),
-            'token_service' => $this->get_option("token_service"),
-            'order_id' => $order_id,
-            'monto' => round($order->order_total),
-            'token_tienda' => $token_tienda_db,
-        );
-
-        $resultado = $this->executeCurl($fields, $this->tbkaas_base_url . SERVER_TBKAAS_VERIFICAR);
-
-        Logger::log_me_wp("RESULTADO :" . print_r($resultado, true));
-
-        if (is_null($resultado)) {
-            return FALSE;
-        } else {
-            if ($resultado->ESTADO == "COMPLETADA") {
-                Logger::log_me_wp("COMPLETADA");
-                return true;
-            } else {
-                Logger::log_me_wp("NO COMPLETADA");
-                return false;
-            }
-        }
-    }
-
-    private function executeCurl($fields, $url) {
-
-        $ch = \curl_init($url);
-
-        \curl_setopt($ch, CURLOPT_URL, $url);
-        \curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-        \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        $result = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
-        Logger::log_me_wp("Resultado Verificacion : " . $result);
-
-        if ($info["http_code"] == 200) {
-            return json_decode($result);
-        } else {
-            return NULL;
-        }
-    }
-
     private function procesoCompletado($POST) {
         Logger::log_me_wp("Iniciando el proceso completado ");
         /*
@@ -427,9 +346,15 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
 
         $order_id = filter_input($POST, "ct_order_id");
+        $order_id_mall = filter_input($POST, "ct_order_id_mall");
+        $order_estado = filter_input($POST, "ct_estado");
 
 
         Logger::log_me_wp("ORDER _id = $order_id");
+        Logger::log_me_wp("ORDER _id_mall = $order_id_mall");
+        Logger::log_me_wp("ORDER _estado = $order_estado");
+
+        Logger::log_me_wp($_POST);
 
         //Verificamos que la orden exista 
         $order = new WC_Order($order_id);
@@ -437,42 +362,15 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             return;
         }
 
-        $ct_firma = filter_input($POST, "ct_firma");
 
-        /* @var $response Response */
-        $response = $this->getResponse($order_id, $POST);
 
-        $arregloFirmado = $response->getArrayResponse();
+        //Revisamos si ya está completada, si lo está no acemos nada.
 
-        Logger::log_me_wp("Arreglo Firmado : ");
-        Logger::log_me_wp($arregloFirmado);
-
-        if ($arregloFirmado["ct_firma"] == $ct_firma) {
-            Logger::log_me_wp("Firmas Corresponden");
-            /*
-             * Si el mensaje está validado verifico que la orden sea haya completado.
-             * Si se completó la marco como completa y agrego los meta datos
-             */
-            $ct_estado = $response->ct_estado;
-            Logger::log_me_wp("ESTADO DE LA ORDEN : $ct_estado");
-
-            if ($ct_estado == "COMPLETADA") {
-                //Marcar Completa
-                $order->payment_complete();
-                //Agregar Meta
-                $this->addMetaFromResponse($response, $order_id);
-                Logger::log_me_wp("Orden $order_id marcada completa");
-            } else {
-                Logger::log_me_wp("Orden $order_id marcada fallida");
-                $order->update_status('failed');
-                add_post_meta($order_id, '_order_id_mall', $response->ct_order_id_mall, true);
-            }
-        } else {
-            Logger::log_me_wp("Firmas NO Corresponden");
+        if ($order->status != "completed") {
+            $this->procesarCallback($POST);
         }
 
-
-
+        //Si no aparece completada y el resultado es COMPLETADA cambiamos el estado y agregamos datos.
 
         /*
          * Redireccionamos.
@@ -495,9 +393,13 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             return;
         }
 
+        
+        $response = $this->getResponseFromPost($POST,$order_id);
         $ct_firma = filter_input($POST, "ct_firma");
+        $ct_estado = filter_input($POST, "ct_estado");
 
-        $response = $this->getResponse($order_id, $POST);
+
+        $response->setCt_token_secret($this->token_secret);
 
         $arregloFirmado = $response->getArrayResponse();
 
@@ -521,6 +423,12 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                 $this->addMetaFromResponse($response, $order_id);
                 Logger::log_me_wp("Orden $order_id marcada completa");
             }
+            else
+            {
+                $order->update_status('failed', "El pago del pedido no fue exitoso.");
+                add_post_meta($order_id, '_order_id_mall', $response->ct_order_id_mall, true);
+
+            }
         } else {
             Logger::log_me_wp("Firmas NO Corresponden");
         }
@@ -537,7 +445,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         add_post_meta($order_id, '_transaction_date', $response->ct_transaction_date, true);
     }
 
-    private function getResponse($order_id, $POST) {
+    private function getResponseFromPost($POST,$order_id) {
         $ct_order_id = $order_id;
         $ct_token_tienda = filter_input($POST, "ct_token_tienda");
         $ct_monto = filter_input($POST, "ct_monto");
@@ -551,11 +459,9 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $ct_accounting_date = filter_input($POST, "ct_accounting_date");
         $ct_transaction_date = filter_input($POST, "ct_transaction_date");
         $ct_order_id_mall = filter_input($POST, "ct_order_id_mall");
-
+        
 
         $response = new Response($ct_order_id, $ct_token_tienda, $ct_monto, $ct_token_service, $ct_estado, $ct_authorization_code, $ct_payment_type_code, $ct_card_number, $ct_card_expiration_date, $ct_shares_number, $ct_accounting_date, $ct_transaction_date, $ct_order_id_mall);
-        $response->setCt_token_secret($this->token_secret);
-
         return $response;
     }
 

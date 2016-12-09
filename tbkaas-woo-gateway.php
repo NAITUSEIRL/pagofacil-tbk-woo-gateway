@@ -1,10 +1,12 @@
 <?php
 
+namespace tbkaaswoogateway;
+
 /*
-  Plugin Name: WebpayPlus PST para Woocommerce
-  Plugin URI:  https://github.com/ctala/tbkaas-woo-gateway
-  Description: Pasarela de Pagos para Woocommerce y Transbank usando WebPayPlus Webservices a través de As A Service Labs
-  Version:     V1.1
+  Plugin Name: PagoFácil.org - WebpayPlus
+  Plugin URI:  http://www.pagofacil.org
+  Description: Pasarela de Pagos para Woocommerce y Transbank usando WebPayPlus Webservices a través de PagoFacil.org
+  Version:     0.2-DEV
   Author:      Cristian Tala Sánchez
   Author URI:  http://www.cristiantala.cl
   License:     MIT
@@ -29,7 +31,7 @@ define("SERVER_TBKAAS_DETALLE", "getOrden");
 
 //VARIABLES
 //Funciones
-add_action('plugins_loaded', 'init_TBKAAS');
+add_action('plugins_loaded', 'tbkaaswoogateway\init_TBKAAS');
 
 function init_TBKAAS() {
     if (!class_exists('WC_Payment_Gateway'))
@@ -42,9 +44,32 @@ function init_TBKAAS() {
 }
 
 function add_your_gateway_class($methods) {
-    $methods[] = 'WC_Gateway_TBKAAS_Chile';
+    $methods[] = 'tbkaaswoogateway\WC_Gateway_TBKAAS_Chile';
     return $methods;
 }
 
-add_filter('woocommerce_payment_gateways', 'add_your_gateway_class');
+add_filter('woocommerce_payment_gateways', 'tbkaaswoogateway\add_your_gateway_class');
+
+function custom_meta_box_markup($post) {
+    $order_id = $post->ID;
+    $codigoAuth = get_post_meta($order_id, "_authorization_code", true);
+    if($codigoAuth!="")
+    {
+        include( plugin_dir_path(__FILE__) . '/templates/order_recibida.php');
+    }
+    else
+    {
+        echo "<p>";
+        echo "No existe información relacionada al pedido.";
+        echo "</p>";
+    }
+     
+ 
+}
+
+function add_custom_meta_box() {
+    add_meta_box("pagofacil-meta-box", "PagoFácil Meta Data", "tbkaaswoogateway\custom_meta_box_markup", "shop_order", "side", "high", null);
+}
+
+add_action("add_meta_boxes", "tbkaaswoogateway\add_custom_meta_box");
 ?>
