@@ -394,7 +394,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         }
 
         
-        $response = $this->getResponseFromPost($POST);
+        $response = $this->getResponseFromPost($POST,$order_idr);
         $ct_firma = filter_input($POST, "ct_firma");
         $ct_estado = filter_input($POST, "ct_estado");
 
@@ -443,7 +443,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         add_post_meta($order_id, '_transaction_date', $response->ct_transaction_date, true);
     }
 
-    private function getResponseFromPost($POST) {
+    private function getResponseFromPost($POST,$order_id) {
         $ct_order_id = $order_id;
         $ct_token_tienda = filter_input($POST, "ct_token_tienda");
         $ct_monto = filter_input($POST, "ct_monto");
