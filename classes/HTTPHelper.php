@@ -33,14 +33,19 @@ namespace tbkaaswoogateway\classes;
  */
 class HTTPHelper {
 
+    var $logger;
+    
     function __construct() {
-        
+        $this->logger = new Logger();
     }
 
     function my_http_response_code($response_code = 200) {
+        $this->logger->log_me_wp("Entrando a My HTTP Response con $response_code");
         if (function_exists('http_response_code')) {
+            $this->logger->log_me_wp("Función existe");
             var_dump(http_response_code($response_code));
         } else {
+            $this->logger->log_me_wp("Función NO existe");
             if ($response_code !== NULL) {
 
                 switch ($response_code) {
@@ -125,7 +130,9 @@ class HTTPHelper {
 
                 $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
 
-                header($protocol . ' ' . $response_code . ' ' . $text);
+                $header = $protocol . ' ' . $response_code . ' ' . $text;
+                $this->logger->log_me_wp("Header ".$header);
+                header($header);
                 var_dump($text);
             }
         }
