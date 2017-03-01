@@ -85,7 +85,7 @@ class HTTPHelper {
                     break;
                 case 404: $text = 'No encontrado';
                     break;
-                case 405: $text = 'Método no permitodo';
+                case 405: $text = 'Método no permitido';
                     break;
                 case 406: $text = 'Not Acceptable';
                     break;

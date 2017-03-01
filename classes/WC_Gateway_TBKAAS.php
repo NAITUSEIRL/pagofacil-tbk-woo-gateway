@@ -368,7 +368,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         //Revisamos si ya está completada, si lo está no acemos nada.
 
         if ($order->status != "completed") {
-            $this->procesarCallback($POST);
+            $this->procesarCallback($POST, FALSE);
         }
 
         //Si no aparece completada y el resultado es COMPLETADA cambiamos el estado y agregamos datos.
@@ -381,24 +381,29 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         exit;
     }
 
-    private function procesarCallback($POST) {
+    private function procesarCallback($POST, $return = true) {
         $http_helper = new HTTPHelper();
         $order_id = filter_input($POST, "ct_order_id");
         //Verificamos que la orden exista 
         $order = new WC_Order($order_id);
         if (!($order)) {
-            $http_helper->my_http_response_code(404);
+            if ($return) {
+                $http_helper->my_http_response_code(404);
+            }
+
             return;
         }
 
         //Si la orden está completada no hago nada.
         if ($order->status === 'completed') {
-            $http_helper->my_http_response_code(400);
+            if ($return) {
+                $http_helper->my_http_response_code(400);
+            }
             return;
         }
 
-        
-        $response = $this->getResponseFromPost($POST,$order_id);
+
+        $response = $this->getResponseFromPost($POST, $order_id);
         $ct_firma = filter_input($POST, "ct_firma");
         $ct_estado = filter_input($POST, "ct_estado");
 
@@ -409,7 +414,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
         Logger::log_me_wp("Arreglo Firmado : ");
         Logger::log_me_wp($arregloFirmado);
-        Logger::log_me_wp("Accounting Date = ".$response->ct_accounting_date);
+        Logger::log_me_wp("Accounting Date = " . $response->ct_accounting_date);
 
         if ($arregloFirmado["ct_firma"] == $ct_firma) {
             Logger::log_me_wp("Firmas Corresponden");
@@ -426,18 +431,21 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                 //Agregar Meta
                 $this->addMetaFromResponse($response, $order_id);
                 Logger::log_me_wp("Orden $order_id marcada completa");
-                $http_helper->my_http_response_code(200);
-            }
-            else
-            {
+                if ($return) {
+                    $http_helper->my_http_response_code(200);
+                }
+            } else {
                 $order->update_status('failed', "El pago del pedido no fue exitoso.");
                 add_post_meta($order_id, '_order_id_mall', $response->ct_order_id_mall, true);
-                $http_helper->my_http_response_code(200);
-
+                if ($return) {
+                    $http_helper->my_http_response_code(200);
+                }
             }
         } else {
             Logger::log_me_wp("Firmas NO Corresponden");
-            $http_helper->my_http_response_code(400);
+            if ($return) {
+                $http_helper->my_http_response_code(400);
+            }
         }
     }
 
@@ -452,7 +460,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         add_post_meta($order_id, '_transaction_date', $response->ct_transaction_date, true);
     }
 
-    private function getResponseFromPost($POST,$order_id) {
+    private function getResponseFromPost($POST, $order_id) {
         $ct_order_id = $order_id;
         $ct_token_tienda = filter_input($POST, "ct_token_tienda");
         $ct_monto = filter_input($POST, "ct_monto");
@@ -466,7 +474,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $ct_accounting_date = filter_input($POST, "ct_accounting_date");
         $ct_transaction_date = filter_input($POST, "ct_transaction_date");
         $ct_order_id_mall = filter_input($POST, "ct_order_id_mall");
-        
+
 
         $response = new Response($ct_order_id, $ct_token_tienda, $ct_monto, $ct_token_service, $ct_estado, $ct_authorization_code, $ct_payment_type_code, $ct_card_number, $ct_card_expiration_date, $ct_shares_number, $ct_accounting_date, $ct_transaction_date, $ct_order_id_mall);
         return $response;
