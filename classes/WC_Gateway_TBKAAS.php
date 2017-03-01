@@ -312,7 +312,9 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                 $this->procesoCompletado(INPUT_POST);
             }
         } else {
-            die("NO PERMITIDO");
+            $helper = new HTTPHelper();
+            $helper->my_http_response_code(403);
+//            die("NO PERMITIDO");
         }
     }
 
