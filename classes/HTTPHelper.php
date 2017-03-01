@@ -81,11 +81,11 @@ class HTTPHelper {
                     break;
                 case 402: $text = 'Payment Required';
                     break;
-                case 403: $text = 'Forbidden';
+                case 403: $text = 'Prohibido';
                     break;
-                case 404: $text = 'Not Found';
+                case 404: $text = 'No encontrado';
                     break;
-                case 405: $text = 'Method Not Allowed';
+                case 405: $text = 'Método no permitodo';
                     break;
                 case 406: $text = 'Not Acceptable';
                     break;
@@ -129,7 +129,7 @@ class HTTPHelper {
             $header = $protocol . ' ' . $response_code . ' ' . $text;
             $this->logger->log_me_wp("Header " . $header);
             header($header);
-            var_dump($text);
+            die($text);
         }
     }
 

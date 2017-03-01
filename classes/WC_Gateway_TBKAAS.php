@@ -313,8 +313,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             }
         } else {
             $helper = new HTTPHelper();
-            $helper->my_http_response_code(403);
-//            die("NO PERMITIDO");
+            $helper->my_http_response_code(405);
         }
     }
 
@@ -383,15 +382,18 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
     }
 
     private function procesarCallback($POST) {
+        $http_helper = new HTTPHelper();
         $order_id = filter_input($POST, "ct_order_id");
         //Verificamos que la orden exista 
         $order = new WC_Order($order_id);
         if (!($order)) {
+            $http_helper->my_http_response_code(404);
             return;
         }
 
         //Si la orden está completada no hago nada.
         if ($order->status === 'completed') {
+            $http_helper->my_http_response_code(400);
             return;
         }
 
@@ -424,15 +426,18 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                 //Agregar Meta
                 $this->addMetaFromResponse($response, $order_id);
                 Logger::log_me_wp("Orden $order_id marcada completa");
+                $http_helper->my_http_response_code(200);
             }
             else
             {
                 $order->update_status('failed', "El pago del pedido no fue exitoso.");
                 add_post_meta($order_id, '_order_id_mall', $response->ct_order_id_mall, true);
+                $http_helper->my_http_response_code(200);
 
             }
         } else {
             Logger::log_me_wp("Firmas NO Corresponden");
+            $http_helper->my_http_response_code(400);
         }
     }
 
