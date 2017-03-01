@@ -39,7 +39,7 @@ class HTTPHelper {
 
     function my_http_response_code($response_code = 200) {
         if (function_exists('http_response_code')) {
-            http_response_code($response_code);
+            var_dump(http_response_code($response_code));
         } else {
             if ($response_code !== NULL) {
 
@@ -126,7 +126,7 @@ class HTTPHelper {
                 $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
 
                 header($protocol . ' ' . $response_code . ' ' . $text);
-                echo $text;
+                var_dump($text);
             }
         }
     }
