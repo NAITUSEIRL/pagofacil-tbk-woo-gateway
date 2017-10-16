@@ -11,7 +11,7 @@
  
     "require": {
         "php": ">=5.4.0",
-        "ctala/transaccion-default": "dev-devel"
+        "ctala/transaccion-default": "dev-feature-legacy-signature"
     },
     "autoload": {
         "psr-4": {

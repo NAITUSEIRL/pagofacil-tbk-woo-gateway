@@ -1,20 +1,23 @@
 [
     {
         "name": "ctala/transaccion-default",
-        "version": "dev-devel",
-        "version_normalized": "dev-devel",
+        "version": "dev-feature-legacy-signature",
+        "version_normalized": "dev-feature-legacy-signature",
         "source": {
             "type": "git",
             "url": "https://github.com/NAITUSEIRL/PagoFacil.org-PHP-SDK.git",
-            "reference": "3bb0c17567ec479f1aca34dc8b730e75f048bac3"
+            "reference": "0fc703f3b49378651bf05206ea9a2b30d455c428"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/NAITUSEIRL/PagoFacil.org-PHP-SDK/zipball/3bb0c17567ec479f1aca34dc8b730e75f048bac3",
-            "reference": "3bb0c17567ec479f1aca34dc8b730e75f048bac3",
+            "url": "https://api.github.com/repos/NAITUSEIRL/PagoFacil.org-PHP-SDK/zipball/0fc703f3b49378651bf05206ea9a2b30d455c428",
+            "reference": "0fc703f3b49378651bf05206ea9a2b30d455c428",
             "shasum": ""
         },
-        "time": "2017-10-16T07:47:04+00:00",
+        "require-dev": {
+            "theseer/phpdox": "^0.10.1"
+        },
+        "time": "2017-10-16T15:48:18+00:00",
         "type": "library",
         "installation-source": "source",
         "autoload": {
