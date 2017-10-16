@@ -1,22 +1,22 @@
 [
     {
         "name": "ctala/transaccion-default",
-        "version": "V0.1.12.3",
-        "version_normalized": "0.1.12.3",
+        "version": "dev-devel",
+        "version_normalized": "dev-devel",
         "source": {
             "type": "git",
             "url": "https://github.com/NAITUSEIRL/PagoFacil.org-PHP-SDK.git",
-            "reference": "d7031130ddd4960c36cfa09d4874888a09686c5e"
+            "reference": "3bb0c17567ec479f1aca34dc8b730e75f048bac3"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/NAITUSEIRL/PagoFacil.org-PHP-SDK/zipball/d7031130ddd4960c36cfa09d4874888a09686c5e",
-            "reference": "d7031130ddd4960c36cfa09d4874888a09686c5e",
+            "url": "https://api.github.com/repos/NAITUSEIRL/PagoFacil.org-PHP-SDK/zipball/3bb0c17567ec479f1aca34dc8b730e75f048bac3",
+            "reference": "3bb0c17567ec479f1aca34dc8b730e75f048bac3",
             "shasum": ""
         },
-        "time": "2016-12-07 12:57:39",
+        "time": "2017-10-16T07:47:04+00:00",
         "type": "library",
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "psr-4": {
                 "ctala\\transaccion\\": ""

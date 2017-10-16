@@ -409,7 +409,6 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
 
 
         $response->setCt_token_secret($this->token_secret);
-
         $arregloFirmado = $response->getArrayResponse();
 
         Logger::log_me_wp("Arreglo Firmado : ");
