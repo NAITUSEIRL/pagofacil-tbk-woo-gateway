@@ -5,7 +5,7 @@ namespace tbkaaswoogateway;
 /*
   Plugin Name: Pago Fácil - WebpayPlus
   Plugin URI:  http://www.pagofacil.cl
-  Description: Pasarela de Pagos para Woocommerce y Transbank usando WebPayPlus Webservices a través de PagoFacil.org
+  Description: Pasarela de Pagos para Woocommerce y Transbank usando WebPayPlus Webservices a través de PagoFacil.cl
   Version:     1.3.1
   Author:      Cristian Tala Sánchez
   Author URI:  http://www.cristiantala.cl

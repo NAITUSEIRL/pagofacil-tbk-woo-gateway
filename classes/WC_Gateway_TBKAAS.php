@@ -457,6 +457,10 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             }
         } else {
             Logger::log_me_wp("Firmas NO Corresponden");
+            $firmado = $arregloFirmado["ct_firma"];
+            Logger::log_me_wp(" $firmado != $ct_firma");
+            
+            
             if ($return) {
                 $http_helper->my_http_response_code(400);
             }
