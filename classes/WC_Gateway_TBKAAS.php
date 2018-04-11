@@ -408,8 +408,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $ct_estado = filter_input($POST, "ct_estado");
 
 
-
         $response->setCt_token_secret($this->token_secret);
+
         $arregloFirmado = $response->getArrayResponse();
 
         Logger::log_me_wp("Arreglo Firmado : ");
@@ -420,22 +420,8 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             Logger::log_me_wp("Firmas Corresponden");
             /*
              * Si el mensaje está validado verifico que la orden sea haya completado.
-             * Si se completó y los montos corresponden la marco como completa y agrego los meta datos
+             * Si se completó la marco como completa y agrego los meta datos
              */
-
-
-            $monto = round($order->order_total);
-
-            if ($monto == $response->ct_monto) {
-                Logger::log_me_wp("Montos NO Corresponden [$monto != $response->ct_monto ]");
-                if ($return) {
-                    $http_helper->my_http_response_code(400);
-                }
-            } else {
-                Logger::log_me_wp("Montos SI Corresponden [$monto == $response->ct_monto ]");
-            }
-
-
             $ct_estado = $response->ct_estado;
             Logger::log_me_wp("ESTADO DE LA ORDEN : $ct_estado");
 
@@ -457,10 +443,6 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             }
         } else {
             Logger::log_me_wp("Firmas NO Corresponden");
-            $firmado = $arregloFirmado["ct_firma"];
-            Logger::log_me_wp(" $firmado != $ct_firma");
-            
-            
             if ($return) {
                 $http_helper->my_http_response_code(400);
             }
