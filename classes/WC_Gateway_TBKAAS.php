@@ -420,8 +420,24 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             Logger::log_me_wp("Firmas Corresponden");
             /*
              * Si el mensaje está validado verifico que la orden sea haya completado.
-             * Si se completó la marco como completa y agrego los meta datos
+             * Si se completó y los montos corresponden la marco como completa y agrego los meta datos
              */
+
+            $ct_monto = $response->ct_monto;
+            $monto = round($order->order_total);
+
+            if ($ct_monto != $monto) {
+
+                Logger::log_me_wp("Montos NO Corresponden");
+                Logger::log_me_wp("Monto $ct_monto recibido es distinto a monto orden $monto");
+                $order->update_status('failed', "El pago del pedido no fue exitoso debido a montos distintos");
+                add_post_meta($order_id, '_order_id_mall', $response->ct_order_id_mall, true);
+                if ($return) {
+                    $http_helper->my_http_response_code(200);
+                }
+            }
+
+
             $ct_estado = $response->ct_estado;
             Logger::log_me_wp("ESTADO DE LA ORDEN : $ct_estado");
 
