@@ -35,6 +35,11 @@ An answer to that question.
 
 == Changelog ==
 
+
+= 1.3.1 =
+* Forced Verification of montos.
+
+
 = 1.3.0 =
 * Added HTTPHelper
 * Added Header returns for callbacks.

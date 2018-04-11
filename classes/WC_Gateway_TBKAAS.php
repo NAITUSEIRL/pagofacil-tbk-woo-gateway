@@ -436,6 +436,10 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
                     $http_helper->my_http_response_code(200);
                 }
             }
+            else
+            {
+                Logger::log_me_wp("Montos SI Corresponden");
+            }
 
 
             $ct_estado = $response->ct_estado;
