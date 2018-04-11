@@ -422,11 +422,24 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
              * Si el mensaje está validado verifico que la orden sea haya completado.
              * Si se completó y los montos corresponden la marco como completa y agrego los meta datos
              */
+
+
             $monto = round($order->order_total);
+
+            if ($monto == $response->ct_monto) {
+                Logger::log_me_wp("Montos NO Corresponden [$monto != $response->ct_monto ]");
+                if ($return) {
+                    $http_helper->my_http_response_code(400);
+                }
+            } else {
+                Logger::log_me_wp("Montos SI Corresponden [$monto == $response->ct_monto ]");
+            }
+
+
             $ct_estado = $response->ct_estado;
             Logger::log_me_wp("ESTADO DE LA ORDEN : $ct_estado");
 
-            if ($ct_estado == "COMPLETADA" && monto == $response->ct_monto) {
+            if ($ct_estado == "COMPLETADA") {
                 //Marcar Completa
                 $order->payment_complete();
                 //Agregar Meta
