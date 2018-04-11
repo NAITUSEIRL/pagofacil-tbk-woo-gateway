@@ -408,6 +408,7 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
         $ct_estado = filter_input($POST, "ct_estado");
 
 
+
         $response->setCt_token_secret($this->token_secret);
         $arregloFirmado = $response->getArrayResponse();
 
@@ -419,12 +420,13 @@ class WC_Gateway_TBKAAS extends \WC_Payment_Gateway {
             Logger::log_me_wp("Firmas Corresponden");
             /*
              * Si el mensaje está validado verifico que la orden sea haya completado.
-             * Si se completó la marco como completa y agrego los meta datos
+             * Si se completó y los montos corresponden la marco como completa y agrego los meta datos
              */
+            $monto = round($order->order_total);
             $ct_estado = $response->ct_estado;
             Logger::log_me_wp("ESTADO DE LA ORDEN : $ct_estado");
 
-            if ($ct_estado == "COMPLETADA") {
+            if ($ct_estado == "COMPLETADA" && monto == $response->ct_monto) {
                 //Marcar Completa
                 $order->payment_complete();
                 //Agregar Meta
